@@ -305,8 +305,8 @@ private constructor(
                 val current = playbackManager.progression.calculateElapsedPositionMs()
                 trackedSong = song
                 // Only jump when outside the chapter: restoring the app mid-chapter keeps its place.
-                val end = clip.endMs ?: Long.MAX_VALUE
-                if (current < clip.startMs - CLIP_SEEK_TOLERANCE_MS || current >= end) {
+                if (!org.oxycblt.musikr.isWithinSpan(
+                    current, clip.startMs, clip.endMs, CLIP_SEEK_TOLERANCE_MS)) {
                     L.d("Starting chapter clip at ${clip.startMs} ms")
                     playbackManager.seekTo(clip.startMs)
                 }

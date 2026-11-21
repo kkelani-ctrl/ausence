@@ -141,7 +141,7 @@ class AlbumMenuDialogFragment : MenuDialogFragment<Menu.ForAlbum>() {
             R.id.action_artist_details -> detailModel.showArtist(menu.album)
             R.id.action_playlist_add ->
                 org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(
-                    parentFragmentManager, menu.album.songs.sortedBy { it.track ?: Int.MAX_VALUE })
+                    parentFragmentManager, listModel.songsOf(menu.album))
             R.id.action_share -> requireContext().share(menu.album)
             else -> error("Unexpected menu item selected $item")
         }
@@ -216,7 +216,7 @@ class ArtistMenuDialogFragment : MenuDialogFragment<Menu.ForArtist>() {
                 requireContext().showToast(R.string.lng_queue_added)
             }
             R.id.action_playlist_add ->
-                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(parentFragmentManager, menu.artist.songs)
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(parentFragmentManager, listModel.songsOf(menu.artist))
             R.id.action_share -> requireContext().share(menu.artist)
             else -> error("Unexpected menu item $item")
         }
@@ -269,7 +269,7 @@ class GenreMenuDialogFragment : MenuDialogFragment<Menu.ForGenre>() {
                 requireContext().showToast(R.string.lng_queue_added)
             }
             R.id.action_playlist_add ->
-                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(parentFragmentManager, menu.genre.songs)
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(parentFragmentManager, listModel.songsOf(menu.genre))
             R.id.action_share -> requireContext().share(menu.genre)
             else -> error("Unexpected menu item $item")
         }

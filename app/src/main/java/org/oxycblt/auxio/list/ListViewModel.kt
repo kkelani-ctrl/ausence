@@ -110,15 +110,16 @@ constructor(private val listSettings: ListSettings, private val musicRepository:
      *
      * @return A list of [Song]s collated from each item selected.
      */
-    fun peekSelection() =
-        selected.value.flatMap {
-            when (it) {
-                is Song -> listOf(it)
-                is Album -> listSettings.albumSongSort.songs(it.songs)
-                is Artist -> listSettings.artistSongSort.songs(it.songs)
-                is Genre -> listSettings.genreSongSort.songs(it.songs)
-                is Playlist -> it.songs
-            }
+    fun peekSelection() = selected.value.flatMap(::songsOf)
+
+    /** The songs of [music], in the order the user sorted that kind of page. */
+    fun songsOf(music: Music): List<Song> =
+        when (music) {
+            is Song -> listOf(music)
+            is Album -> listSettings.albumSongSort.songs(music.songs)
+            is Artist -> listSettings.artistSongSort.songs(music.songs)
+            is Genre -> listSettings.genreSongSort.songs(music.songs)
+            is Playlist -> music.songs
         }
 
     /**

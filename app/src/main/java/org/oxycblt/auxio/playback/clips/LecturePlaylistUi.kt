@@ -35,7 +35,6 @@ import com.google.android.material.bottomsheet.BackportBottomSheetBehavior
 import com.google.android.material.bottomsheet.BackportBottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONObject
 import org.oxycblt.auxio.R
 import org.oxycblt.auxio.databinding.DialogAddToPlaylistBinding
 import org.oxycblt.auxio.databinding.DialogLecturePlaylistBinding

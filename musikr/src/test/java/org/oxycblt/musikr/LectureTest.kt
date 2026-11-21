@@ -79,6 +79,20 @@ class LectureTest {
         assertTrue(Chapter.parse(null).isEmpty())
     }
 
+    @Test
+    fun isWithinSpan_keepsPlaceInsideAChapter() {
+        // Chapter from 10:00 to 20:00: inside keeps its place, outside jumps to the start.
+        assertTrue(isWithinSpan(600_000, 600_000, 1_200_000))
+        assertTrue(isWithinSpan(900_000, 600_000, 1_200_000))
+        assertFalse(isWithinSpan(1_200_000, 600_000, 1_200_000)) // end is exclusive
+        assertFalse(isWithinSpan(0, 600_000, 1_200_000))
+        // Slightly before the start counts as inside while a seek settles.
+        assertTrue(isWithinSpan(598_500, 600_000, 1_200_000, slackMs = 2_000))
+        assertFalse(isWithinSpan(590_000, 600_000, 1_200_000, slackMs = 2_000))
+        // No end: runs to the end of the recording.
+        assertTrue(isWithinSpan(Long.MAX_VALUE - 1, 600_000, null))
+    }
+
     /**
      * Checks the parsers against a real library dump, if one is available. Each <id>.lrc /
      * <id>.json pair is a song's transcript and SECTIONS_JSON tag; expected.json holds the counts

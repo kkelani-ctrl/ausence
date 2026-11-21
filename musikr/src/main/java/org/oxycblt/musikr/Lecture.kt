@@ -138,6 +138,14 @@ data class TranscriptLine(val startMs: Long, val text: String) {
     }
 }
 
+/**
+ * Whether [positionMs] lies within a span from [startMs] to [endMs] (exclusive; null means the
+ * span runs to the end of the recording). [slackMs] tolerates being slightly before the start,
+ * e.g. while a seek to the start is still settling.
+ */
+fun isWithinSpan(positionMs: Long, startMs: Long, endMs: Long?, slackMs: Long = 0): Boolean =
+    positionMs >= startMs - slackMs && positionMs < (endMs ?: Long.MAX_VALUE)
+
 /** The index of the [Chapter] playing at [positionMs], or -1 if none. */
 fun List<Chapter>.indexAt(positionMs: Long): Int = indexOfLast { it.startMs <= positionMs }
 
