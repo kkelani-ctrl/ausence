@@ -131,7 +131,7 @@ class AuxioService :
         val mediaNotification = playbackFragment.notification
         if (mediaNotification != null) {
             if (change == ForegroundListener.Change.MEDIA_SESSION) {
-                startForeground(mediaNotification.code, mediaNotification.build())
+                tryStartForeground(mediaNotification.code, mediaNotification.build())
             }
             // Nothing changed, but don't show anything music related since we can always
             // index during playback.
@@ -139,13 +139,27 @@ class AuxioService :
         } else {
             musicFragment.createNotification {
                 if (it != null) {
-                    startForeground(it.code, it.build())
+                    tryStartForeground(it.code, it.build())
                     isForeground = true
                 } else {
                     ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
                     isForeground = false
                 }
             }
+        }
+    }
+
+    /**
+     * Android 12+ refuses to (re)enter the foreground while the app is in the background
+     * (e.g. playback changing state long after a pause). Like Media3, carry on instead of
+     * crashing: playback continues and the media notification still updates.
+     */
+    private fun tryStartForeground(code: Int, notification: android.app.Notification) {
+        try {
+            startForeground(code, notification)
+        } catch (e: IllegalStateException) {
+            // ForegroundServiceStartNotAllowedException extends IllegalStateException (API 31+).
+            Timber.w("Not allowed to enter the foreground right now: $e")
         }
     }
 
