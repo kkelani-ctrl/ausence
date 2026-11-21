@@ -304,7 +304,9 @@ private constructor(
                 LectureProgress.skipNextResume = false
                 val current = playbackManager.progression.calculateElapsedPositionMs()
                 trackedSong = song
-                if (kotlin.math.abs(current - clip.startMs) > CLIP_SEEK_TOLERANCE_MS) {
+                // Only jump when outside the chapter: restoring the app mid-chapter keeps its place.
+                val end = clip.endMs ?: Long.MAX_VALUE
+                if (current < clip.startMs - CLIP_SEEK_TOLERANCE_MS || current >= end) {
                     L.d("Starting chapter clip at ${clip.startMs} ms")
                     playbackManager.seekTo(clip.startMs)
                 }

@@ -139,7 +139,9 @@ class AlbumMenuDialogFragment : MenuDialogFragment<Menu.ForAlbum>() {
                 requireContext().showToast(R.string.lng_queue_added)
             }
             R.id.action_artist_details -> detailModel.showArtist(menu.album)
-            R.id.action_playlist_add -> musicModel.addToPlaylist(menu.album)
+            R.id.action_playlist_add ->
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(
+                    parentFragmentManager, menu.album.songs.sortedBy { it.track ?: Int.MAX_VALUE })
             R.id.action_share -> requireContext().share(menu.album)
             else -> error("Unexpected menu item selected $item")
         }
@@ -213,7 +215,8 @@ class ArtistMenuDialogFragment : MenuDialogFragment<Menu.ForArtist>() {
                 playbackModel.addToQueue(menu.artist)
                 requireContext().showToast(R.string.lng_queue_added)
             }
-            R.id.action_playlist_add -> musicModel.addToPlaylist(menu.artist)
+            R.id.action_playlist_add ->
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(parentFragmentManager, menu.artist.songs)
             R.id.action_share -> requireContext().share(menu.artist)
             else -> error("Unexpected menu item $item")
         }
@@ -265,7 +268,8 @@ class GenreMenuDialogFragment : MenuDialogFragment<Menu.ForGenre>() {
                 playbackModel.addToQueue(menu.genre)
                 requireContext().showToast(R.string.lng_queue_added)
             }
-            R.id.action_playlist_add -> musicModel.addToPlaylist(menu.genre)
+            R.id.action_playlist_add ->
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(parentFragmentManager, menu.genre.songs)
             R.id.action_share -> requireContext().share(menu.genre)
             else -> error("Unexpected menu item $item")
         }
@@ -386,7 +390,8 @@ class SelectionMenuDialogFragment : MenuDialogFragment<Menu.ForSelection>() {
                 playbackModel.addToQueue(menu.songs)
                 requireContext().showToast(R.string.lng_queue_added)
             }
-            R.id.action_playlist_add -> musicModel.addToPlaylist(menu.songs)
+            R.id.action_playlist_add ->
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(parentFragmentManager, menu.songs)
             R.id.action_share -> requireContext().share(menu.songs)
             else -> error("Unexpected menu item selected $item")
         }

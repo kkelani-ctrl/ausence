@@ -67,7 +67,7 @@ abstract class SelectionFragment<VB : ViewBinding> :
                 true
             }
             R.id.action_selection_playlist_add -> {
-                musicModel.addToPlaylist(listModel.takeSelection())
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.showEpisodes(childFragmentManager, listModel.takeSelection())
                 true
             }
             else -> false

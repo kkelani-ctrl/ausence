@@ -59,4 +59,5 @@
     <string name="lbl_lp_unavailable">Unavailable</string>
     <string name="fmt_episode_info">Episode · %1$s · %2$s</string>
     <string name="lbl_lp_add_episode">Add episode to playlist</string>
+    <string name="fmt_lp_add_episodes">%d episodes</string>
 </resources>

@@ -22,6 +22,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import java.text.Normalizer
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import org.oxycblt.auxio.databinding.ItemLectureHitBinding
 import org.oxycblt.auxio.music.resolve
 import org.oxycblt.auxio.music.resolveNames
@@ -61,11 +63,12 @@ object LectureSearch {
 
     private fun matches(haystack: String, terms: List<String>) = terms.all { haystack.contains(it) }
 
-    fun chapters(songs: Collection<Song>, query: String): List<LectureHit> {
+    suspend fun chapters(songs: Collection<Song>, query: String): List<LectureHit> {
         val terms = terms(query)
         if (terms.isEmpty()) return emptyList()
         val hits = mutableListOf<LectureHit>()
         for (song in songs) {
+            currentCoroutineContext().ensureActive()
             val chapters = song.chapters
             for ((i, chapter) in chapters.withIndex()) {
                 val haystack =
@@ -95,7 +98,7 @@ object LectureSearch {
      * Search the raw LRC transcript text. Works directly on the stored string (no parsing, no
      * per-line allocation) so it stays fast over hundreds of hour-long lectures.
      */
-    fun transcripts(songs: Collection<Song>, query: String): List<LectureHit> {
+    suspend fun transcripts(songs: Collection<Song>, query: String): List<LectureHit> {
         if (query.trim().length < MIN_TRANSCRIPT_QUERY) return emptyList()
         // Plain case-insensitive matching (no accent folding) keeps this allocation-free.
         val terms = query.lowercase().split(Regex("\\s+")).filter { it.isNotEmpty() }
@@ -104,6 +107,7 @@ object LectureSearch {
         val anchor = terms.maxBy { it.length }
         val hits = mutableListOf<LectureHit>()
         for (song in songs) {
+            currentCoroutineContext().ensureActive()
             val raw = song.transcriptText ?: continue
             var from = 0
             var lastLineStart = -1

@@ -121,7 +121,7 @@ object LecturePlaylists {
         return playlist
     }
 
-    fun add(id: String, entry: PlaylistEntry) = edit(id) { it + entry }
+    fun add(id: String, entries: List<PlaylistEntry>) = edit(id) { it + entries }
 
     fun removeAt(id: String, index: Int) =
         edit(id) { list -> list.filterIndexed { i, _ -> i != index } }

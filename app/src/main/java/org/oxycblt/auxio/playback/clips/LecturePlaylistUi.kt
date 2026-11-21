@@ -63,7 +63,7 @@ internal fun formatLength(ms: Long): String {
 /** Ask for a name and create a playlist (optionally with a first entry). */
 fun promptNewLecturePlaylist(
     context: Context,
-    first: PlaylistEntry? = null,
+    first: List<PlaylistEntry> = emptyList(),
     onCreated: (LecturePlaylist) -> Unit = {},
 ) {
     val input =
@@ -82,8 +82,8 @@ fun promptNewLecturePlaylist(
         .setView(container)
         .setPositiveButton(R.string.lbl_lp_create) { _, _ ->
             val name = input.text.toString().ifBlank { context.getString(R.string.lbl_lp_new) }
-            val playlist = LecturePlaylists.create(name, listOfNotNull(first))
-            if (first != null) {
+            val playlist = LecturePlaylists.create(name, first)
+            if (first.isNotEmpty()) {
                 Toast.makeText(
                         context, context.getString(R.string.fmt_lp_added, playlist.name),
                         Toast.LENGTH_SHORT)
@@ -133,8 +133,9 @@ internal fun bindEntryRow(b: ItemSongBinding, entry: PlaylistEntry, song: Song?)
 /** Pick (or create) a playlist for a chapter or a whole episode. */
 @AndroidEntryPoint
 class AddToLecturePlaylistSheet : ViewBindingBottomSheetDialogFragment<DialogAddToPlaylistBinding>() {
-    private val entry: PlaylistEntry by lazy {
-        PlaylistEntry.fromJson(JSONObject(requireArguments().getString(ARG_ENTRY)!!))
+    private val entries: List<PlaylistEntry> by lazy {
+        val array = org.json.JSONArray(requireArguments().getString(ARG_ENTRIES)!!)
+        (0 until array.length()).map { PlaylistEntry.fromJson(array.getJSONObject(it)) }
     }
 
     override fun onCreateBinding(inflater: LayoutInflater) =
@@ -142,7 +143,13 @@ class AddToLecturePlaylistSheet : ViewBindingBottomSheetDialogFragment<DialogAdd
 
     override fun onBindingCreated(binding: DialogAddToPlaylistBinding, savedInstanceState: Bundle?) {
         super.onBindingCreated(binding, savedInstanceState)
-        binding.addSubject.text = entry.title ?: getString(R.string.lbl_lp_add_episode)
+        val single = entries.singleOrNull()
+        binding.addSubject.text =
+            when {
+                single?.title != null -> single.title
+                single != null -> getString(R.string.lbl_lp_add_episode)
+                else -> getString(R.string.fmt_lp_add_episodes, entries.size)
+            }
         val inflater = LayoutInflater.from(requireContext())
 
         // "New playlist" first, then the existing ones.
@@ -153,7 +160,7 @@ class AddToLecturePlaylistSheet : ViewBindingBottomSheetDialogFragment<DialogAdd
             root.setOnClickListener {
                 val context = requireContext()
                 dismiss()
-                promptNewLecturePlaylist(context, entry)
+                promptNewLecturePlaylist(context, entries)
             }
         }
         for (playlist in LecturePlaylists.all.reversed()) {
@@ -163,7 +170,7 @@ class AddToLecturePlaylistSheet : ViewBindingBottomSheetDialogFragment<DialogAdd
                     resources.getQuantityString(
                         R.plurals.fmt_song_count, playlist.entries.size, playlist.entries.size)
                 root.setOnClickListener {
-                    LecturePlaylists.add(playlist.id, entry)
+                    LecturePlaylists.add(playlist.id, entries)
                     Toast.makeText(
                             requireContext(),
                             getString(R.string.fmt_lp_added, playlist.name),
@@ -177,13 +184,22 @@ class AddToLecturePlaylistSheet : ViewBindingBottomSheetDialogFragment<DialogAdd
 
     companion object {
         private const val TAG = "ausence_add_to_playlist"
-        private const val ARG_ENTRY = "entry"
+        private const val ARG_ENTRIES = "entries"
 
-        fun show(fragmentManager: FragmentManager, entry: PlaylistEntry) {
+        fun show(fragmentManager: FragmentManager, entry: PlaylistEntry) =
+            show(fragmentManager, listOf(entry))
+
+        fun show(fragmentManager: FragmentManager, entries: List<PlaylistEntry>) {
+            if (entries.isEmpty()) return
+            val json = org.json.JSONArray().apply { entries.forEach { put(it.toJson()) } }
             AddToLecturePlaylistSheet()
-                .apply { arguments = Bundle().apply { putString(ARG_ENTRY, entry.toJson().toString()) } }
+                .apply { arguments = Bundle().apply { putString(ARG_ENTRIES, json.toString()) } }
                 .show(fragmentManager, TAG)
         }
+
+        /** Whole episodes, for adding a series, a teacher or a selection. */
+        fun showEpisodes(fragmentManager: FragmentManager, songs: Collection<Song>) =
+            show(fragmentManager, songs.map { PlaylistEntry.episode(it) })
     }
 }
 
