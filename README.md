@@ -20,14 +20,14 @@ return to, and collect.
 
 <table align="center">
   <tr>
+    <td align="center"><img src="art/screenshots/home.png" width="240" alt="Home with lectures in progress and finished"><br><sub><b>Pick up where you left off</b></sub></td>
     <td align="center"><img src="art/screenshots/player.png" width="240" alt="Player with chapter name on the seek bar and a live transcript card"><br><sub><b>Chapters on the bar, words on screen</b></sub></td>
     <td align="center"><img src="art/screenshots/transcript.png" width="240" alt="Full-screen transcript following the speaker"><br><sub><b>A transcript that follows the voice</b></sub></td>
-    <td align="center"><img src="art/screenshots/search.png" width="240" alt="Search results showing matching chapters"><br><sub><b>Search finds the moment, not the file</b></sub></td>
   </tr>
   <tr>
+    <td align="center"><img src="art/screenshots/search.png" width="240" alt="Search results showing matching chapters"><br><sub><b>Search finds the moment, not the file</b></sub></td>
     <td align="center"><img src="art/screenshots/chapters.png" width="240" alt="Chapter list with summaries under the player"><br><sub><b>Every chapter, summarised</b></sub></td>
     <td align="center"><img src="art/screenshots/library.png" width="240" alt="Library with progress bars and time left"><br><sub><b>Your place, in every lecture</b></sub></td>
-    <td></td>
   </tr>
 </table>
 
