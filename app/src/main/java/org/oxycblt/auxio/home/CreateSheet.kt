@@ -20,33 +20,28 @@ package org.oxycblt.auxio.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.oxycblt.auxio.databinding.DialogCreateBinding
 import org.oxycblt.auxio.music.MusicViewModel
+import org.oxycblt.auxio.ui.ViewBindingBottomSheetDialogFragment
 
 /**
  * The "Create" sheet from the bottom bar, as in Spotify: start a playlist, import one, or add a
  * folder of lectures.
+ *
+ * Uses Auxio's own bottom sheet base: the app replaces Material's bottom sheet dialog layout with
+ * its backported behavior, so a stock BottomSheetDialogFragment crashes on open.
  */
 @AndroidEntryPoint
-class CreateSheet : BottomSheetDialogFragment() {
+class CreateSheet : ViewBindingBottomSheetDialogFragment<DialogCreateBinding>() {
     private val musicModel: MusicViewModel by activityViewModels()
     private val homeModel: HomeViewModel by activityViewModels()
-    private var binding: DialogCreateBinding? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = DialogCreateBinding.inflate(inflater, container, false).also { binding = it }.root
+    override fun onCreateBinding(inflater: LayoutInflater) = DialogCreateBinding.inflate(inflater)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val binding = requireNotNull(binding)
+    override fun onBindingCreated(binding: DialogCreateBinding, savedInstanceState: Bundle?) {
+        super.onBindingCreated(binding, savedInstanceState)
         binding.createPlaylist.setOnClickListener {
             dismiss()
             musicModel.createPlaylist()
@@ -56,15 +51,15 @@ class CreateSheet : BottomSheetDialogFragment() {
             musicModel.importPlaylist()
         }
         binding.createFolder.setOnClickListener {
+            // The folder picker opens from the library screen, so go there first.
+            runCatching {
+                androidx.navigation.Navigation.findNavController(
+                        requireActivity(), org.oxycblt.auxio.R.id.explore_nav_host)
+                    .popBackStack(org.oxycblt.auxio.R.id.home_fragment, false)
+            }
             dismiss()
-            // Show the library first so the folder picker (opened from there) can appear.
             homeModel.startChooseMusicLocations()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
     }
 
     companion object {
