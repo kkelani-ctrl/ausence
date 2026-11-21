@@ -57,6 +57,8 @@ class Auxio : Application() {
         }
 
         org.oxycblt.auxio.playback.progress.LectureProgress.init(this)
+        org.oxycblt.auxio.playback.clips.LecturePlaylists.init(this)
+        org.oxycblt.auxio.playback.clips.ClipSession.init(this)
 
         // Migrate any settings that may have changed in an app update.
         imageSettings.migrate()

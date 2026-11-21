@@ -36,4 +36,27 @@
     <string name="lbl_create_folder">Add a folder</string>
     <string name="lng_create_folder">Choose where your lectures are stored</string>
     <string name="fmt_chapter_hit_info">Chapter · %1$s · %2$s</string>
+    <!-- Ausence playlists (chapters and episodes) -->
+    <string name="lbl_add_to_playlist_chapter">Add chapter to playlist</string>
+    <string name="lbl_lp_add_title">Add to playlist</string>
+    <string name="lbl_lp_new">New playlist</string>
+    <string name="lbl_lp_name_hint">Playlist name</string>
+    <string name="lbl_lp_create">Create</string>
+    <string name="lbl_lp_save">Save</string>
+    <string name="lbl_lp_cancel">Cancel</string>
+    <string name="fmt_lp_added">Added to %s</string>
+    <string name="fmt_lp_info">%1$d items · %2$s</string>
+    <string name="lbl_lp_play">Play</string>
+    <string name="lbl_lp_full_episode">Play full episode</string>
+    <string name="lbl_lp_move_up">Move up</string>
+    <string name="lbl_lp_move_down">Move down</string>
+    <string name="lbl_lp_remove">Remove from playlist</string>
+    <string name="lbl_lp_rename">Rename</string>
+    <string name="lbl_lp_delete">Delete playlist</string>
+    <string name="lbl_lp_imported">Imported playlists</string>
+    <string name="lbl_lp_yours">Your playlists</string>
+    <string name="lng_lp_empty_playlist">Nothing here yet. Add chapters with the + in a lecture\'s chapter list, or whole episodes from their ⋯ menu.</string>
+    <string name="lbl_lp_unavailable">Unavailable</string>
+    <string name="fmt_episode_info">Episode · %1$s · %2$s</string>
+    <string name="lbl_lp_add_episode">Add episode to playlist</string>
 </resources>

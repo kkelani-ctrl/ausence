@@ -49,6 +49,7 @@ import org.oxycblt.musikr.Song
 class SearchAdapter(
     private val listener: SelectableListListener<Music>,
     private val onHitClick: (LectureHit) -> Unit = {},
+    private val onHitAdd: (LectureHit) -> Unit = {},
 ) :
     SelectionIndicatorAdapter<Item, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
@@ -86,7 +87,7 @@ class SearchAdapter(
             is Genre -> (holder as GenreViewHolder).bind(item, listener)
             is Playlist -> (holder as PlaylistViewHolder).bind(item, listener)
             is BasicHeader -> (holder as BasicHeaderViewHolder).bind(item)
-            is LectureHit -> (holder as LectureHitViewHolder).bind(item, onHitClick)
+            is LectureHit -> (holder as LectureHitViewHolder).bind(item, onHitClick, onHitAdd)
         }
     }
 

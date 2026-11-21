@@ -39,7 +39,16 @@ import org.oxycblt.musikr.Song
 @AndroidEntryPoint
 class ChaptersSheetFragment : ViewBindingFragment<FragmentChaptersSheetBinding>() {
     private val playbackModel: PlaybackViewModel by activityViewModels()
-    private val adapter = ChapterAdapter { playbackModel.seekTo(it.startMs.msToDs()) }
+    private val adapter =
+        ChapterAdapter(
+            onClick = { playbackModel.seekTo(it.startMs.msToDs()) },
+            onAdd = { chapter ->
+                playbackModel.song.value?.let { song ->
+                    org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.show(
+                        childFragmentManager,
+                        org.oxycblt.auxio.playback.clips.PlaylistEntry.chapter(song, chapter))
+                }
+            })
     private var lastUserScrollMs = 0L
     private var lastIndex = -1
 

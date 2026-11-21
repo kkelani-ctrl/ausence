@@ -279,7 +279,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
             }
         // Lectures fork: nothing to sort on the Home overview.
         binding.homeNormalToolbar.menu.findItem(R.id.action_sort)?.isVisible =
-            tabType != MusicType.HOME
+            tabType != MusicType.HOME && tabType != MusicType.PLAYLISTS
     }
 
     private fun handleRecreate(recreate: Unit?) {
@@ -500,7 +500,8 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 MusicType.ALBUMS -> AlbumListFragment()
                 MusicType.ARTISTS -> ArtistListFragment()
                 MusicType.GENRES -> GenreListFragment()
-                MusicType.PLAYLISTS -> PlaylistListFragment()
+                MusicType.PLAYLISTS ->
+                    org.oxycblt.auxio.playback.clips.LecturePlaylistsFragment()
                 MusicType.HOME -> HomeOverviewFragment()
             }
     }

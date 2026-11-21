@@ -53,8 +53,20 @@
         android:textAppearance="?attr/textAppearanceLabelMedium"
         android:textColor="?android:attr/textColorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/hit_add"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="42:10" />
+
+    <ImageButton
+        android:id="@+id/hit_add"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/lbl_add_to_playlist_chapter"
+        android:src="@drawable/ic_playlist_add_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?android:attr/textColorSecondary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

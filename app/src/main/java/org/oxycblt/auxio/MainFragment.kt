@@ -490,7 +490,7 @@ class MainFragment :
         when (actionItem.id) {
             R.id.action_new_playlist -> {
                 L.d("Creating playlist")
-                musicModel.createPlaylist()
+                org.oxycblt.auxio.playback.clips.promptNewLecturePlaylist(requireContext())
             }
             R.id.action_import_playlist -> {
                 L.d("Importing playlist")

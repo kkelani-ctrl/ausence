@@ -130,7 +130,16 @@ abstract class LectureListDialog : ViewBindingBottomSheetDialogFragment<DialogLe
 /** Chapter list for the playing lecture. Tap a chapter to jump to it. */
 @AndroidEntryPoint
 class ChaptersDialog : LectureListDialog() {
-    private val adapter = ChapterAdapter { seekToMs(it.startMs) }
+    private val adapter =
+        ChapterAdapter(
+            onClick = { seekToMs(it.startMs) },
+            onAdd = { chapter ->
+                playbackModel.song.value?.let { song ->
+                    org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.show(
+                        childFragmentManager,
+                        org.oxycblt.auxio.playback.clips.PlaylistEntry.chapter(song, chapter))
+                }
+            })
 
     override fun onBindingCreated(binding: DialogLectureListBinding, savedInstanceState: Bundle?) {
         binding.lectureListTitle.setText(R.string.lbl_chapters)
@@ -188,8 +197,11 @@ class TranscriptDialog : LectureListDialog() {
     }
 }
 
-class ChapterAdapter(private val onClick: (Chapter) -> Unit) :
-    RecyclerView.Adapter<ChapterAdapter.Holder>() {
+class ChapterAdapter(
+    private val onClick: (Chapter) -> Unit,
+    /** Lectures fork: add a chapter to a playlist. Null hides the button. */
+    private val onAdd: ((Chapter) -> Unit)? = null,
+) : RecyclerView.Adapter<ChapterAdapter.Holder>() {
     private var chapters = emptyList<Chapter>()
     private var current = -1
 
@@ -237,6 +249,8 @@ class ChapterAdapter(private val onClick: (Chapter) -> Unit) :
         b.chapterSummary.text = chapter.summary
         b.root.isActivated = isCurrent
         b.root.setOnClickListener { onClick(chapter) }
+        b.chapterAdd.isVisible = onAdd != null
+        b.chapterAdd.setOnClickListener { onAdd?.invoke(chapter) }
     }
 
     class Holder(val binding: ItemChapterBinding) : RecyclerView.ViewHolder(binding.root)

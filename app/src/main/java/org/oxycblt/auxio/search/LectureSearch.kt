@@ -142,8 +142,15 @@ object LectureSearch {
 
 class LectureHitViewHolder private constructor(private val binding: ItemLectureHitBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(hit: LectureHit, onClick: (LectureHit) -> Unit) {
+    fun bind(
+        hit: LectureHit,
+        onClick: (LectureHit) -> Unit,
+        onAdd: (LectureHit) -> Unit = {},
+    ) {
         val context = binding.root.context
+        // Chapters can be added to a playlist straight from search.
+        binding.hitAdd.visibility = if (hit.isChapter) android.view.View.VISIBLE else android.view.View.GONE
+        binding.hitAdd.setOnClickListener { onAdd(hit) }
         binding.hitCover.bind(hit.song)
         binding.hitTime.text = hit.startMs.formatDurationMs(true)
         val lecture = hit.song.name.resolve(context)

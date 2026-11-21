@@ -12,6 +12,11 @@
         android:title="@string/lbl_transcript"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_full_episode"
+        android:title="@string/lbl_lp_full_episode"
+        android:visible="false"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_open_equalizer"
         android:icon="@drawable/ic_config_24"
         android:title="@string/lbl_equalizer"

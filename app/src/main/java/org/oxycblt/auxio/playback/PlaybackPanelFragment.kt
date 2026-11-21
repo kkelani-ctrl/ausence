@@ -253,6 +253,12 @@ class PlaybackPanelFragment :
             showTranscript()
             return true
         }
+        if (item.itemId == R.id.action_full_episode) {
+            // Keep listening past the end of this playlist chapter; the playlist then carries on.
+            org.oxycblt.auxio.playback.clips.ClipSession.playFull(queueModel.index.value)
+            item.isVisible = false
+            return true
+        }
         if (item.itemId == R.id.action_open_equalizer) {
             // Launch the system equalizer app, if possible.
             L.d("Launching equalizer")
@@ -312,6 +318,9 @@ class PlaybackPanelFragment :
         val hasTranscript = !song.transcriptText.isNullOrBlank()
         // With the bottom row present, keep the top bar clean; otherwise use the toolbar.
         val hasBottomRow = binding.playbackLectureActions != null
+        val session = org.oxycblt.auxio.playback.clips.ClipSession
+        binding.playbackToolbar.menu.findItem(R.id.action_full_episode)?.isVisible =
+            session.matches(queueModel.queue.value) && session.clipAt(queueModel.index.value) != null
         binding.playbackToolbar.menu.apply {
             findItem(R.id.action_show_chapters)?.isVisible = hasChapters && !hasBottomRow
             findItem(R.id.action_show_transcript)?.isVisible = hasTranscript && !hasBottomRow

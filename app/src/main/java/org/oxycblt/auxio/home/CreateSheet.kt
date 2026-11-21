@@ -43,8 +43,9 @@ class CreateSheet : ViewBindingBottomSheetDialogFragment<DialogCreateBinding>() 
     override fun onBindingCreated(binding: DialogCreateBinding, savedInstanceState: Bundle?) {
         super.onBindingCreated(binding, savedInstanceState)
         binding.createPlaylist.setOnClickListener {
+            val context = requireContext()
             dismiss()
-            musicModel.createPlaylist()
+            org.oxycblt.auxio.playback.clips.promptNewLecturePlaylist(context)
         }
         binding.createImport.setOnClickListener {
             dismiss()

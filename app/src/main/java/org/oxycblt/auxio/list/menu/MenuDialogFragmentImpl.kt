@@ -80,7 +80,10 @@ class SongMenuDialogFragment : MenuDialogFragment<Menu.ForSong>() {
                 playbackModel.addToQueue(menu.song)
                 requireContext().showToast(R.string.lng_queue_added)
             }
-            R.id.action_playlist_add -> musicModel.addToPlaylist(menu.song)
+            R.id.action_playlist_add ->
+                org.oxycblt.auxio.playback.clips.AddToLecturePlaylistSheet.show(
+                    parentFragmentManager,
+                    org.oxycblt.auxio.playback.clips.PlaylistEntry.episode(menu.song))
             R.id.action_artist_details -> detailModel.showArtist(menu.song)
             R.id.action_album_details -> detailModel.showAlbum(menu.song.album)
             R.id.action_share -> requireContext().share(menu.song)

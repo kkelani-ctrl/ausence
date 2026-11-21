@@ -175,6 +175,7 @@ private constructor(
     fun release() {
         saveLectureProgress()
         stopProgressTicker()
+        stopClipMonitor()
         autoStopJob?.cancel()
         waitJob.cancel()
         playbackManager.removeListener(this)
@@ -208,6 +209,7 @@ private constructor(
         // Lectures fork: remember where we are (pauses and seeks), and keep saving while playing.
         saveLectureProgress()
         if (progression.isPlaying) startProgressTicker() else stopProgressTicker()
+        if (progression.isPlaying) startClipMonitor() else stopClipMonitor()
     }
 
     // --- LECTURE PROGRESS (audiobook-style resume) ---
@@ -236,9 +238,79 @@ private constructor(
         progressJob = null
     }
 
+    // --- CHAPTER PLAYLISTS (clips) ---
+
+    private var trackedIndex = -1
+    private var clipJob: Job? = null
+    /** The queue position whose clip end was last acted on, so it's only handled once. */
+    private var clipEndedAt = -1
+
+    /** The clip the current queue position should play, if a chapter playlist is playing. */
+    private fun currentClip(): org.oxycblt.auxio.playback.clips.PlaylistEntry? {
+        val session = org.oxycblt.auxio.playback.clips.ClipSession
+        if (session.entries.isEmpty()) return null
+        val queue = playbackManager.queue
+        if (queue.isEmpty()) return null
+        if (!session.matches(queue)) {
+            // The queue was replaced or edited: this is no longer that playlist.
+            session.clear()
+            return null
+        }
+        return session.clipAt(playbackManager.index)
+    }
+
+    private fun startClipMonitor() {
+        if (clipJob?.isActive == true) return
+        clipJob = scope.launch {
+            while (true) {
+                delay(CLIP_CHECK_INTERVAL_MS.milliseconds)
+                val clip = currentClip() ?: continue
+                val end = clip.endMs ?: continue
+                val position = playbackManager.progression.calculateElapsedPositionMs()
+                val index = playbackManager.index
+                // Seeking back into the clip re-arms its end.
+                if (index == clipEndedAt && position < end - CLIP_REARM_MS) clipEndedAt = -1
+                if (position >= clip.startMs && position >= end - CLIP_END_SLACK_MS &&
+                    index != clipEndedAt) {
+                    clipEndedAt = index
+                    if (index < playbackManager.queue.lastIndex) {
+                        L.d("Chapter clip ended, moving to the next playlist item")
+                        playbackManager.next()
+                    } else {
+                        L.d("Last chapter clip ended, pausing")
+                        playbackManager.playing(false)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stopClipMonitor() {
+        clipJob?.cancel()
+        clipJob = null
+    }
+
     /** When a different lecture starts: close out the old one, and resume the new one. */
     private fun onLectureMaybeChanged() {
         val song = playbackManager.currentSong
+        val index = playbackManager.index
+        // Chapter playlists: each queue position may be a clip of its episode (even when two
+        // clips of the same episode follow each other).
+        if (index != trackedIndex || song != trackedSong) {
+            trackedIndex = index
+            clipEndedAt = -1
+            val clip = currentClip()
+            if (clip != null) {
+                LectureProgress.skipNextResume = false
+                val current = playbackManager.progression.calculateElapsedPositionMs()
+                trackedSong = song
+                if (kotlin.math.abs(current - clip.startMs) > CLIP_SEEK_TOLERANCE_MS) {
+                    L.d("Starting chapter clip at ${clip.startMs} ms")
+                    playbackManager.seekTo(clip.startMs)
+                }
+                return
+            }
+        }
         if (song == trackedSong) return
         trackedSong?.let { previous ->
             // Played through to the end (auto-advance): the last save was just before the end.
@@ -276,5 +348,10 @@ private constructor(
         private const val RESUME_REWIND_MS = 5_000L
         /** If a lecture moves on with the last save this close to the end, it was finished. */
         private const val FINISHED_ON_ADVANCE_MS = 60_000L
+        private const val CLIP_CHECK_INTERVAL_MS = 300L
+        /** Move on this close to the clip's end (the next chapter's first words aren't heard). */
+        private const val CLIP_END_SLACK_MS = 250L
+        private const val CLIP_SEEK_TOLERANCE_MS = 2_000L
+        private const val CLIP_REARM_MS = 5_000L
     }
 }

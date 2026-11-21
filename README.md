@@ -35,6 +35,10 @@ Everything Auxio does, plus:
 - **Spotify-style navigation**: a bottom bar with Home (lectures in progress and finished),
   Search (chapters appear like songs, with their length), Your Library (series, teachers,
   audio, playlists) and Create (new or imported playlist, or a new folder of lectures).
+- **Playlists of chapters**: add a single chapter (the + in a lecture's chapter list or on a
+  search result) or a whole episode (its menu) to a playlist. No audio is copied: a chapter plays
+  from its start to its end, then the playlist moves on. "Play full episode" plays the whole
+  lecture and then continues with the playlist.
 - **Audiobook-style progress**: every lecture remembers where you stopped and picks up there
   (a few seconds back) next time, even after closing the app. Lists show a thin progress bar
   with the time left, album pages show how many lectures you've finished, and the ⋯ menu can

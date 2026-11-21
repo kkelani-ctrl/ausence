@@ -413,6 +413,30 @@ constructor(
     }
 
     /**
+     * Lectures fork: play an Ausence playlist (chapters and whole episodes), starting at
+     * [startIndex]. Chapters play only their own part of the episode. With [fullEpisode], the
+     * item at [startIndex] plays its whole episode from the start, then the playlist carries on.
+     *
+     * @param entries The playlist's entries, in order.
+     * @param songs The episode for each entry (same size and order as [entries]).
+     */
+    fun playLecturePlaylist(
+        entries: List<org.oxycblt.auxio.playback.clips.PlaylistEntry>,
+        songs: List<Song>,
+        startIndex: Int = 0,
+        fullEpisode: Boolean = false,
+    ) {
+        if (songs.isEmpty() || songs.size != entries.size) return
+        L.d("Playing lecture playlist of ${songs.size} items from $startIndex")
+        val session = org.oxycblt.auxio.playback.clips.ClipSession
+        session.start(entries)
+        if (fullEpisode) session.playFull(startIndex)
+        playImpl(commandFactory.songs(songs, ShuffleMode.OFF))
+        if (startIndex > 0) playbackManager.goto(startIndex)
+        if (fullEpisode) playbackManager.seekTo(0)
+    }
+
+    /**
      * Shuffle a list of [Song]s.
      *
      * @param songs The [Song]s to shuffle.
