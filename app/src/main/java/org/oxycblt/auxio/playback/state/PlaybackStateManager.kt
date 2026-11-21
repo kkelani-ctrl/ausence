@@ -345,7 +345,9 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
         val rawQueue: RawQueue,
     )
 
-    private val listeners = mutableListOf<Listener>()
+    // Copy-on-write: listeners can be added from the main thread while a state change (e.g. the
+    // saved state being restored in the background) is being dispatched to them.
+    private val listeners = java.util.concurrent.CopyOnWriteArrayList<Listener>()
 
     @Volatile
     private var stateMirror =

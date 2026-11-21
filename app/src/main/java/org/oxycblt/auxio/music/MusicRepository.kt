@@ -246,8 +246,10 @@ constructor(
     private val settingCovers: SettingCovers,
     private val musicSettings: MusicSettings,
 ) : MusicRepository {
-    private val updateListeners = mutableListOf<MusicRepository.UpdateListener>()
-    private val indexingListeners = mutableListOf<MusicRepository.IndexingListener>()
+    private val updateListeners =
+        java.util.concurrent.CopyOnWriteArrayList<MusicRepository.UpdateListener>()
+    private val indexingListeners =
+        java.util.concurrent.CopyOnWriteArrayList<MusicRepository.IndexingListener>()
     @Volatile private var indexingWorker: IndexingWorker? = null
 
     @Volatile override var library: MutableLibrary? = null

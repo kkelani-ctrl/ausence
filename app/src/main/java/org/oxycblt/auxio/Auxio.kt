@@ -44,6 +44,28 @@ class Auxio : Application() {
     @Inject lateinit var uiSettings: UISettings
     @Inject lateinit var homeSettings: HomeSettings
 
+    /**
+     * Lectures fork: write crash reports to Android/data/app.ausence/files/crashes on the phone, so
+     * they can be read over USB without developer tools.
+     */
+    private fun installCrashLog() {
+        val previous = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, error ->
+            runCatching {
+                val dir = java.io.File(getExternalFilesDir(null), "crashes").apply { mkdirs() }
+                val stamp =
+                    java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", java.util.Locale.US)
+                        .format(java.util.Date())
+                val trace = android.util.Log.getStackTraceString(error)
+                java.io.File(dir, "crash_$stamp.txt")
+                    .writeText(
+                        "Ausence ${BuildConfig.VERSION_NAME} on Android " +
+                            "${android.os.Build.VERSION.RELEASE}\nThread: ${thread.name}\n\n$trace")
+            }
+            previous?.uncaughtException(thread, error)
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         @Suppress("KotlinConstantConditions")
@@ -56,6 +78,7 @@ class Auxio : Application() {
             Timber.plant(Timber.DebugTree())
         }
 
+        installCrashLog()
         org.oxycblt.auxio.playback.progress.LectureProgress.init(this)
         org.oxycblt.auxio.playback.clips.LecturePlaylists.init(this)
         org.oxycblt.auxio.playback.clips.ClipSession.init(this)
