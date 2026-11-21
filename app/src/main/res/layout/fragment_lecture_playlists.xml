@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Lectures fork: the Playlists tab of Your Library. -->
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<org.oxycblt.auxio.list.recycler.AuxioRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/home_playlist_recycler"
     style="@style/Widget.Auxio.RecyclerView.Linear"

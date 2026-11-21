@@ -26,6 +26,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -176,6 +177,20 @@ class PlaybackPanelFragment :
         // the same actions live in the toolbar).
         binding.playbackTranscript?.setOnClickListener { showTranscript() }
         binding.playbackLyricsCard?.setOnClickListener { showTranscript() }
+        binding.playbackTapZone?.let { zone ->
+            val detector =
+                android.view.GestureDetector(
+                    requireContext(),
+                    object : android.view.GestureDetector.SimpleOnGestureListener() {
+                        override fun onDown(e: MotionEvent) = true
+
+                        override fun onDoubleTap(e: MotionEvent): Boolean {
+                            forwardDoubleTap(backwards = e.x < zone.width / 2f)
+                            return true
+                        }
+                    })
+            zone.setOnTouchListener { _, e -> detector.onTouchEvent(e) }
+        }
         binding.playbackSpeed?.setOnClickListener {
             org.oxycblt.auxio.playback.audio.ListeningSheet().show(childFragmentManager, org.oxycblt.auxio.playback.audio.ListeningSheet.TAG)
         }
@@ -338,6 +353,28 @@ class PlaybackPanelFragment :
         }
 
         return false
+    }
+
+    /**
+     * A double-tap beside the cover: hand it to the cover's own overlay (left or right edge), so
+     * it animates and seeks exactly like a tap on the cover.
+     */
+    private fun forwardDoubleTap(backwards: Boolean) {
+        val pager = binding?.playbackPager ?: return
+        val overlay =
+            pager.recycler().findViewHolderForAdapterPosition(pager.currentItem)?.itemView
+                ?.findViewById<StepperOverlay>(R.id.cover_fast_seek_overlay)
+        if (overlay == null || overlay.width == 0) {
+            seek(if (backwards) Direction.BACKWARDS else Direction.FORWARDS)
+            return
+        }
+        val now = android.os.SystemClock.uptimeMillis()
+        val event =
+            MotionEvent.obtain(
+                now, now, MotionEvent.ACTION_UP,
+                if (backwards) 1f else overlay.width - 1f, overlay.height / 2f, 0)
+        overlay.onDoubleTap(event)
+        event.recycle()
     }
 
     private fun showChapters() {

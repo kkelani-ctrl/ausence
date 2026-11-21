@@ -19,6 +19,16 @@
         app:titleTextAppearance="?attr/textAppearanceLabelLargeEmphasized"
         tools:subtitle="@string/lbl_all_songs" />
 
+    <!-- Lectures fork: double-tap anywhere across the cover's row, not just on the cover. -->
+    <View
+        android:id="@+id/playback_tap_zone"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/playback_pager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/playback_pager" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/playback_pager"
         android:layout_width="0dp"
