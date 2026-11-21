@@ -142,10 +142,19 @@ class BottomSheetContentBehavior<V : View>(context: Context, attributeSet: Attri
             return Int.MIN_VALUE
         }
 
-        return if (offset >= 0) {
-            peekHeight
+        val consumed =
+            if (offset >= 0) {
+                peekHeight
+            } else {
+                (peekHeight * (1 - abs(offset))).toInt()
+            }
+        // Lectures fork: the main content (under the playback sheet) never slides under the
+        // bottom navigation bar. Content inside the player (under the chapters sheet) is
+        // unaffected, since the bar is hidden while the player is open.
+        return if (this is org.oxycblt.auxio.playback.PlaybackBottomSheetBehavior<*>) {
+            maxOf(consumed, BottomNavSpace.height)
         } else {
-            (peekHeight * (1 - abs(offset))).toInt()
+            consumed
         }
     }
 }

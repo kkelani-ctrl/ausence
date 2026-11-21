@@ -32,6 +32,9 @@ Everything Auxio does, plus:
 - **Transcripts**: a time-synced transcript that follows playback. Tap a line to jump
   there. Recordings with only untimed text (for example an audiobook's source text) show it
   as readable paragraphs.
+- **Spotify-style navigation**: a bottom bar with Home (lectures in progress and finished),
+  Search (chapters appear like songs, with their length), Your Library (series, teachers,
+  audio, playlists) and Create (new or imported playlist, or a new folder of lectures).
 - **Audiobook-style progress**: every lecture remembers where you stopped and picks up there
   (a few seconds back) next time, even after closing the app. Lists show a thin progress bar
   with the time left, album pages show how many lectures you've finished, and the ⋯ menu can

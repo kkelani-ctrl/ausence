@@ -129,8 +129,28 @@ constructor(
      * A list of [MusicType] corresponding to the current [Tab] configuration, excluding invisible
      * [Tab]s.
      */
-    var currentTabTypes = listOf(MusicType.HOME) + homeGenerator.tabs()
+    var currentTabTypes = listOf(MusicType.HOME)
         private set
+
+    /**
+     * Lectures fork: the bottom bar switches this screen between Home (the overview) and Your
+     * Library (the usual tabs: series, teachers, audio, playlists).
+     */
+    val showingLibrary: StateFlow<Boolean>
+        field = MutableStateFlow(false)
+
+    private fun tabsForMode() =
+        if (showingLibrary.value) homeGenerator.tabs().ifEmpty { listOf(MusicType.SONGS) }
+        else listOf(MusicType.HOME)
+
+    /** Show Home ([library] false) or Your Library ([library] true). */
+    fun showLibrary(library: Boolean) {
+        if (showingLibrary.value == library) return
+        showingLibrary.value = library
+        currentTabTypes = tabsForMode()
+        _currentTabType.value = currentTabTypes[0]
+        recreateTabs.put(Unit)
+    }
 
     private val _currentTabType = MutableStateFlow(currentTabTypes[0])
     /** The [MusicType] of the currently shown [Tab]. */
@@ -193,7 +213,7 @@ constructor(
     }
 
     override fun invalidateTabs() {
-        currentTabTypes = listOf(MusicType.HOME) + homeGenerator.tabs()
+        currentTabTypes = tabsForMode()
         recreateTabs.put(Unit)
     }
 

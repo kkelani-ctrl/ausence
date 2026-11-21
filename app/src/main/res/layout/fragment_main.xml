@@ -145,4 +145,16 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <!-- Lectures fork: Spotify-style bottom bar. Sits under the mini player and slides away as
+         the full player opens. -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/main_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorSurface"
+        android:elevation="8dp"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

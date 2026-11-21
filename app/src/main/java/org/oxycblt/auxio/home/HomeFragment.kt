@@ -253,6 +253,13 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 NamedTabStrategy(homeModel.currentTabTypes),
             )
             .attach()
+
+        // Lectures fork: the bottom bar picks Home or Your Library, and has its own Search.
+        binding.homeNormalToolbar.title =
+            getString(
+                if (homeModel.showingLibrary.value) R.string.lbl_your_library
+                else R.string.lbl_home)
+        binding.homeNormalToolbar.menu.findItem(R.id.action_search)?.isVisible = false
     }
 
     private fun updateCurrentTab(tabType: MusicType) {

@@ -26,4 +26,14 @@
     <string name="lbl_continue_listening">Continue listening</string>
     <string name="lbl_finished_lectures">Finished</string>
     <string name="lng_home_empty">Lectures you start will show up here, so you can pick up where you left off.</string>
+    <!-- Bottom navigation and Create -->
+    <string name="lbl_your_library">Your Library</string>
+    <string name="lbl_create">Create</string>
+    <string name="lbl_create_playlist">Playlist</string>
+    <string name="lng_create_playlist">Build a list of lectures to listen to</string>
+    <string name="lbl_create_import">Import a playlist</string>
+    <string name="lng_create_import">From an M3U file on your phone</string>
+    <string name="lbl_create_folder">Add a folder</string>
+    <string name="lng_create_folder">Choose where your lectures are stored</string>
+    <string name="fmt_chapter_hit_info">Chapter · %1$s · %2$s</string>
 </resources>

@@ -133,6 +133,8 @@ class MainFragment :
             )
         val detailBackCallback =
             DetailBackPressedCallback(detailModel).also { detailBackCallback = it }
+
+        setupBottomNav(binding)
         val selectionBackCallback =
             SelectionBackPressedCallback(listModel).also { selectionBackCallback = it }
         speedDialBackCallback = SpeedDialBackPressedCallback()
@@ -224,8 +226,92 @@ class MainFragment :
         collectImmediately(playbackModel.openPanel.flow, ::handlePanel)
     }
 
+    // --- LECTURES FORK: SPOTIFY-STYLE BOTTOM NAVIGATION ---
+
+    private var bottomNavDestinationListener:
+        androidx.navigation.NavController.OnDestinationChangedListener? =
+        null
+
+    private fun setupBottomNav(binding: FragmentMainBinding) {
+        val nav = binding.mainBottomNav
+        if (nav == null) {
+            org.oxycblt.auxio.ui.BottomNavSpace.height = 0
+            return
+        }
+        nav.addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->
+            if (org.oxycblt.auxio.ui.BottomNavSpace.height != v.height) {
+                org.oxycblt.auxio.ui.BottomNavSpace.height = v.height
+                // Re-derive the mini player's resting height and the content padding.
+                binding.playbackSheet.requestApplyInsets()
+                binding.root.requestLayout()
+            }
+        }
+        nav.setOnItemSelectedListener { item ->
+            val controller = binding.exploreNavHost.findNavController()
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    controller.popBackStack(R.id.home_fragment, false)
+                    homeModel.showLibrary(false)
+                    true
+                }
+                R.id.nav_library -> {
+                    controller.popBackStack(R.id.home_fragment, false)
+                    homeModel.showLibrary(true)
+                    true
+                }
+                R.id.nav_search -> {
+                    if (controller.currentDestination?.id != R.id.search_fragment) {
+                        controller.popBackStack(R.id.home_fragment, false)
+                        controller.navigate(R.id.search)
+                    }
+                    true
+                }
+                R.id.nav_create -> {
+                    org.oxycblt.auxio.home.CreateSheet()
+                        .show(childFragmentManager, org.oxycblt.auxio.home.CreateSheet.TAG)
+                    // Create is an action, not a place: keep the current tab highlighted.
+                    false
+                }
+                else -> false
+            }
+        }
+        // Tapping the current tab again: go back to its top level.
+        nav.setOnItemReselectedListener { item ->
+            val controller = binding.exploreNavHost.findNavController()
+            when (item.itemId) {
+                R.id.nav_home,
+                R.id.nav_library -> controller.popBackStack(R.id.home_fragment, false)
+                else -> {}
+            }
+        }
+        collectImmediately(homeModel.showingLibrary) {
+            syncBottomNav(
+                runCatching { binding.exploreNavHost.findNavController().currentDestination?.id }
+                    .getOrNull())
+        }
+    }
+
+    /** Keep the highlighted bottom tab in step with where the user actually is. */
+    private fun syncBottomNav(destinationId: Int?) {
+        val nav = binding?.mainBottomNav ?: return
+        val target =
+            when (destinationId) {
+                R.id.search_fragment -> R.id.nav_search
+                R.id.home_fragment ->
+                    if (homeModel.showingLibrary.value) R.id.nav_library else R.id.nav_home
+                else -> return // Detail pages keep whichever tab they were opened from.
+            }
+        val item = nav.menu.findItem(target) ?: return
+        if (!item.isChecked) item.isChecked = true
+    }
+
     override fun onStart() {
         super.onStart()
+        bottomNavDestinationListener =
+            androidx.navigation.NavController.OnDestinationChangedListener { _, destination, _ ->
+                    syncBottomNav(destination.id)
+                }
+                .also { requireBinding().exploreNavHost.findNavController().addOnDestinationChangedListener(it) }
         val binding = requireBinding()
         // Once we add the destination change callback, we will receive another initialization call,
         // so handle that by resetting the flag.
@@ -252,6 +338,10 @@ class MainFragment :
     override fun onStop() {
         super.onStop()
         val binding = requireBinding()
+        bottomNavDestinationListener?.let {
+            binding.exploreNavHost.findNavController().removeOnDestinationChangedListener(it)
+        }
+        bottomNavDestinationListener = null
         requireNotNull(navigationListener) { "NavigationListener was not available" }
             .release(binding.exploreNavHost.findNavController())
         binding.playbackSheet.viewTreeObserver.removeOnPreDrawListener(this)
@@ -283,6 +373,8 @@ class MainFragment :
             binding.queueSheet.coordinatorLayoutBehavior as QueueBottomSheetBehavior?
 
         val playbackRatio = max(playbackSheetBehavior.calculateSlideOffset(), 0f)
+        // Lectures fork: the bottom bar slides away as the full player opens.
+        binding.mainBottomNav?.let { it.translationY = playbackRatio * it.height }
         // Stupid hack to prevent you from sliding the sheet up without closing the speed
         // dial. Filtering out ACTION_MOVE events will cause back gestures to close the
         // speed dial, which is super finicky behavior.

@@ -92,6 +92,15 @@ class PlaybackBottomSheetBehavior<V : View>(context: Context, attributeSet: Attr
 
     override fun applyWindowInsets(child: View, insets: WindowInsets): WindowInsets {
         super.applyWindowInsets(child, insets)
+        // Lectures fork: rest the mini player on top of the bottom navigation bar (which already
+        // covers the system navigation inset).
+        val nav = org.oxycblt.auxio.ui.BottomNavSpace.height
+        if (nav > 0) {
+            val bar = (child as android.view.ViewGroup).getChildAt(0)
+            val barHeight =
+                if (bar.measuredHeight > 0) bar.measuredHeight else getIdealBarHeight(child.context)
+            peekHeight = barHeight + nav
+        }
         // Offset our expanded panel by the size of the playback bar, as that is shown when
         // we slide up the panel.
         val bars = insets.systemBarInsetsCompat

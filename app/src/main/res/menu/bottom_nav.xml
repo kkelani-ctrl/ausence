@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lectures fork: Spotify-style bottom navigation. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home_24"
+        android:title="@string/lbl_home" />
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_search_24"
+        android:title="@string/lbl_search" />
+    <item
+        android:id="@+id/nav_library"
+        android:icon="@drawable/ic_library_24"
+        android:title="@string/lbl_your_library" />
+    <item
+        android:id="@+id/nav_create"
+        android:icon="@drawable/ic_create_24"
+        android:title="@string/lbl_create" />
+</menu>

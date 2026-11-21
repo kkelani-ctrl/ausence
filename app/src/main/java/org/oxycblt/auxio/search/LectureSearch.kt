@@ -43,11 +43,13 @@ data class LectureHit(
     val text: String,
     val detail: String?,
     val isChapter: Boolean,
+    /** For chapters: how long the chapter runs. */
+    val durationMs: Long? = null,
 )
 
 /** Finds [LectureHit]s for a query. All words of the query must be present (in any order). */
 object LectureSearch {
-    private const val MAX_CHAPTER_HITS = 60
+    private const val MAX_CHAPTER_HITS = 150
     private const val MAX_TRANSCRIPT_HITS = 100
     private const val MIN_TRANSCRIPT_QUERY = 3
     private val COMBINING = Regex("\\p{InCombiningDiacriticalMarks}+")
@@ -64,13 +66,22 @@ object LectureSearch {
         if (terms.isEmpty()) return emptyList()
         val hits = mutableListOf<LectureHit>()
         for (song in songs) {
-            for (chapter in song.chapters) {
+            val chapters = song.chapters
+            for ((i, chapter) in chapters.withIndex()) {
                 val haystack =
                     fold(
                         listOfNotNull(chapter.title, chapter.summary, chapter.part)
                             .joinToString(" "))
                 if (matches(haystack, terms)) {
-                    hits.add(LectureHit(song, chapter.startMs, chapter.title, chapter.summary, true))
+                    val end = chapter.endMs ?: chapters.getOrNull(i + 1)?.startMs ?: song.durationMs
+                    hits.add(
+                        LectureHit(
+                            song,
+                            chapter.startMs,
+                            chapter.title,
+                            chapter.summary,
+                            true,
+                            (end - chapter.startMs).coerceAtLeast(0)))
                 }
             }
         }
@@ -133,10 +144,20 @@ class LectureHitViewHolder private constructor(private val binding: ItemLectureH
     RecyclerView.ViewHolder(binding.root) {
     fun bind(hit: LectureHit, onClick: (LectureHit) -> Unit) {
         val context = binding.root.context
+        binding.hitCover.bind(hit.song)
         binding.hitTime.text = hit.startMs.formatDurationMs(true)
-        binding.hitText.text = if (hit.isChapter) hit.text else "“${hit.text}”"
-        binding.hitSong.text =
-            "${hit.song.name.resolve(context)} · ${hit.song.artists.resolveNames(context)}"
+        val lecture = hit.song.name.resolve(context)
+        if (hit.isChapter) {
+            // Chapters read like songs: title, then "Chapter · lecture · length".
+            binding.hitText.text = hit.text
+            val minutes = ((hit.durationMs ?: 0) / 60_000L).coerceAtLeast(1)
+            binding.hitSong.text =
+                context.getString(
+                    org.oxycblt.auxio.R.string.fmt_chapter_hit_info, lecture, "$minutes min")
+        } else {
+            binding.hitText.text = "“${hit.text}”"
+            binding.hitSong.text = "$lecture · ${hit.song.artists.resolveNames(context)}"
+        }
         binding.root.setOnClickListener { onClick(hit) }
     }
 
