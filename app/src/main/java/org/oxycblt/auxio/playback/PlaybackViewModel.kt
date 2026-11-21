@@ -444,6 +444,8 @@ constructor(
     fun playAt(song: Song, positionMs: Long) {
         L.d("Playing $song at ${positionMs}ms")
         if (playbackManager.currentSong != song) {
+            // Start exactly here rather than at the lecture's saved position.
+            org.oxycblt.auxio.playback.progress.LectureProgress.skipNextResume = true
             playFromAlbumImpl(song, ShuffleMode.OFF)
         }
         playbackManager.seekTo(positionMs)

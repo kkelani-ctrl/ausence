@@ -32,6 +32,14 @@ Everything Auxio does, plus:
 - **Transcripts**: a time-synced transcript that follows playback. Tap a line to jump
   there. Recordings with only untimed text (for example an audiobook's source text) show it
   as readable paragraphs.
+- **Audiobook-style progress**: every lecture remembers where you stopped and picks up there
+  (a few seconds back) next time, even after closing the app. Lists show a thin progress bar
+  with the time left, album pages show how many lectures you've finished, and the ⋯ menu can
+  mark a lecture as finished or unplayed.
+- **Chapters on the player**: the seek bar is split at chapter breaks with the current chapter's
+  name between the times, and the sheet under the player lists the chapters (instead of the
+  queue).
+- **Live transcript card**: the line being spoken and the next one, right on the player.
 - **Search inside lectures**: the search screen finds matching chapter titles and
   summaries, and words spoken in the transcripts. Tap a result to start playing at that point.
 

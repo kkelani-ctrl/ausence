@@ -106,7 +106,7 @@
         android:layout_marginEnd="@dimen/spacing_medium"
         android:layout_marginBottom="@dimen/spacing_medium"
         app:layout_constraintTop_toBottomOf="@+id/playback_seek_bar"
-        app:layout_constraintBottom_toTopOf="@+id/playback_lecture_actions"
+        app:layout_constraintBottom_toTopOf="@+id/playback_lyrics_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_max="400dp">
@@ -166,6 +166,56 @@
         </org.oxycblt.auxio.playback.ui.button.ScaledPlaybackButtonGroup>
     </org.oxycblt.auxio.playback.ui.ForcedLTRFrameLayout>
 
+    <!-- Live transcript, as in Spotify's lyrics card: the line being spoken and the next one. -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/playback_lyrics_card"
+        style="?attr/materialCardViewFilledStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_medium"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/lbl_transcript"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/playback_lecture_actions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playback_controls_container"
+        app:layout_constraintWidth_max="520dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:paddingVertical="12dp">
+
+            <TextView
+                android:id="@+id/playback_lyrics_current"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceTitleMediumEmphasized"
+                android:textColor="?attr/colorOnSurface"
+                tools:text="The soul does not come into being with the body." />
+
+            <TextView
+                android:id="@+id/playback_lyrics_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:alpha="0.5"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurface"
+                tools:text="It has lived before, many times." />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- Bottom row, as in Apple Music: transcript on the left, chapters on the right. -->
     <LinearLayout
         android:id="@+id/playback_lecture_actions"
@@ -177,7 +227,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playback_controls_container"
+        app:layout_constraintTop_toBottomOf="@+id/playback_lyrics_card"
         app:layout_constraintWidth_max="400dp">
 
         <org.oxycblt.auxio.ui.RippleFixMaterialButton

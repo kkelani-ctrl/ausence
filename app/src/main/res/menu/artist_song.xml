@@ -25,6 +25,14 @@
         android:icon="@drawable/ic_album_24"
         android:title="@string/lbl_album_details" />
     <item
+        android:id="@+id/action_mark_finished"
+        android:icon="@drawable/ic_check_24"
+        android:title="@string/lbl_mark_finished" />
+    <item
+        android:id="@+id/action_mark_unplayed"
+        android:icon="@drawable/ic_replay_24"
+        android:title="@string/lbl_mark_unplayed" />
+    <item
         android:id="@+id/action_detail"
         android:icon="@drawable/ic_details_24"
         android:title="@string/lbl_song_detail" />

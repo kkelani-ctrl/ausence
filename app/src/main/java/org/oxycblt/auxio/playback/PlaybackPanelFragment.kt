@@ -30,6 +30,7 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.activityViewModels
@@ -57,6 +58,10 @@ import org.oxycblt.auxio.util.recycler
 import org.oxycblt.auxio.util.showToast
 import org.oxycblt.auxio.util.smoothScrollByPageTo
 import org.oxycblt.auxio.util.systemBarInsetsCompat
+import org.oxycblt.musikr.Chapter
+import org.oxycblt.musikr.TranscriptLine
+import org.oxycblt.musikr.indexAt
+import org.oxycblt.musikr.lineAt
 import org.oxycblt.musikr.MusicParent
 import org.oxycblt.musikr.Song
 import timber.log.Timber as L
@@ -170,7 +175,9 @@ class PlaybackPanelFragment :
         // Lectures fork: Apple Music-style bottom row (absent on short/landscape layouts, where
         // the same actions live in the toolbar).
         binding.playbackTranscript?.setOnClickListener { showTranscript() }
-        binding.playbackChapters?.setOnClickListener { showChapters() }
+        binding.playbackLyricsCard?.setOnClickListener { showTranscript() }
+        // Like Spotify's queue button: slide up the chapters sheet under the player.
+        binding.playbackChapters?.setOnClickListener { playbackModel.openQueue() }
 
         binding.playbackMore?.setOnClickListener {
             playbackModel.song.value?.let {
@@ -284,6 +291,7 @@ class PlaybackPanelFragment :
     }
 
     override fun onSeekConfirmed(positionDs: Long) {
+        isScrubbing = false
         playbackModel.seekTo(positionDs)
     }
 
@@ -308,6 +316,14 @@ class PlaybackPanelFragment :
             findItem(R.id.action_show_chapters)?.isVisible = hasChapters && !hasBottomRow
             findItem(R.id.action_show_transcript)?.isVisible = hasTranscript && !hasBottomRow
         }
+        // Live transcript card and chapter marks on the seek bar.
+        lectureLines = TranscriptLine.parse(song.transcriptText)
+        lectureChapters = song.chapters
+        lastLineIndex = Int.MIN_VALUE
+        binding.playbackLyricsCard?.isVisible = lectureLines.isNotEmpty()
+        binding.playbackSeekBar?.chapterMarksDs = lectureChapters.map { it.startMs.msToDs() }
+        updateLectureDisplay(playbackModel.positionDs.value)
+
         // Like Apple Music's lyrics button: dimmed rather than hidden when unavailable.
         binding.playbackTranscript?.apply {
             isEnabled = hasTranscript
@@ -328,6 +344,40 @@ class PlaybackPanelFragment :
 
     private fun updatePosition(positionDs: Long) {
         requireBinding().playbackSeekBar?.positionDs = positionDs
+        updateLectureDisplay(positionDs)
+    }
+
+    private var lectureLines = emptyList<TranscriptLine>()
+    private var lectureChapters = emptyList<Chapter>()
+    private var lastLineIndex = Int.MIN_VALUE
+    private var isScrubbing = false
+
+    /** Keep the transcript card and the chapter name in step with playback. */
+    private fun updateLectureDisplay(positionDs: Long) {
+        val binding = binding ?: return
+        val positionMs = positionDs.dsToMs()
+        if (!isScrubbing) {
+            binding.playbackSeekBar?.chapterLabel =
+                lectureChapters.getOrNull(lectureChapters.indexAt(positionMs))?.title
+        }
+        if (lectureLines.isEmpty()) return
+        val index = lectureLines.lineAt(positionMs)
+        if (index == lastLineIndex) return
+        lastLineIndex = index
+        val current = lectureLines.getOrNull(index) ?: lectureLines.first().takeIf { index < 0 }
+        val next = lectureLines.getOrNull(if (index < 0) 1 else index + 1)
+        binding.playbackLyricsCurrent?.text = current?.text
+        binding.playbackLyricsNext?.apply {
+            text = next?.text
+            isVisible = next != null
+        }
+    }
+
+    override fun onScrub(positionDs: Long) {
+        // While dragging, show which chapter the finger is over.
+        isScrubbing = true
+        requireBinding().playbackSeekBar?.chapterLabel =
+            lectureChapters.getOrNull(lectureChapters.indexAt(positionDs.dsToMs()))?.title
     }
 
     private fun updateRepeat(repeatMode: RepeatMode) {

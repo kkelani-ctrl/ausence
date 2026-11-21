@@ -37,6 +37,8 @@ import org.oxycblt.auxio.playback.state.DeferredPlayback
 import org.oxycblt.auxio.playback.state.PlaybackStateManager
 import org.oxycblt.auxio.playback.state.Progression
 import org.oxycblt.auxio.widgets.WidgetComponent
+import org.oxycblt.auxio.playback.progress.LectureProgress
+import org.oxycblt.auxio.playback.state.QueueChange
 import org.oxycblt.musikr.MusicParent
 import org.oxycblt.musikr.Song
 import timber.log.Timber as L
@@ -171,6 +173,8 @@ private constructor(
         get() = if (exoHolder.sessionOngoing) sessionHolder.notification else null
 
     fun release() {
+        saveLectureProgress()
+        stopProgressTicker()
         autoStopJob?.cancel()
         waitJob.cancel()
         playbackManager.removeListener(this)
@@ -187,11 +191,76 @@ private constructor(
         isShuffled: Boolean,
     ) {
         cancelAutoStop()
+        onLectureMaybeChanged()
+    }
+
+    override fun onIndexMoved(index: Int) {
+        onLectureMaybeChanged()
+    }
+
+    override fun onQueueChanged(queue: List<Song>, index: Int, change: QueueChange) {
+        onLectureMaybeChanged()
     }
 
     override fun onProgressionChanged(progression: Progression) {
         // Update timer whenever play/pause state changes
         updateAutoStopTimer(progression.isPlaying)
+        // Lectures fork: remember where we are (pauses and seeks), and keep saving while playing.
+        saveLectureProgress()
+        if (progression.isPlaying) startProgressTicker() else stopProgressTicker()
+    }
+
+    // --- LECTURE PROGRESS (audiobook-style resume) ---
+
+    private var trackedSong: Song? = null
+    private var progressJob: Job? = null
+
+    private fun saveLectureProgress() {
+        val song = playbackManager.currentSong ?: return
+        if (song != trackedSong) return
+        LectureProgress.save(song, playbackManager.progression.calculateElapsedPositionMs())
+    }
+
+    private fun startProgressTicker() {
+        if (progressJob?.isActive == true) return
+        progressJob = scope.launch {
+            while (true) {
+                delay(PROGRESS_SAVE_INTERVAL_MS.milliseconds)
+                saveLectureProgress()
+            }
+        }
+    }
+
+    private fun stopProgressTicker() {
+        progressJob?.cancel()
+        progressJob = null
+    }
+
+    /** When a different lecture starts: close out the old one, and resume the new one. */
+    private fun onLectureMaybeChanged() {
+        val song = playbackManager.currentSong
+        if (song == trackedSong) return
+        trackedSong?.let { previous ->
+            // Played through to the end (auto-advance): the last save was just before the end.
+            val entry = LectureProgress.get(previous)
+            if (entry != null && !entry.finished &&
+                entry.positionMs >= previous.durationMs - FINISHED_ON_ADVANCE_MS) {
+                LectureProgress.markFinished(previous)
+            }
+        }
+        trackedSong = song
+        if (song == null) return
+        if (LectureProgress.skipNextResume) {
+            LectureProgress.skipNextResume = false
+            return
+        }
+        val entry = LectureProgress.get(song) ?: return
+        if (entry.finished || entry.positionMs < RESUME_MIN_MS) return
+        val current = playbackManager.progression.calculateElapsedPositionMs()
+        // Restoring the app's own saved state already put us there.
+        if (kotlin.math.abs(current - entry.positionMs) < RESUME_MIN_MS) return
+        L.d("Resuming $song at ${entry.positionMs} ms")
+        playbackManager.seekTo((entry.positionMs - RESUME_REWIND_MS).coerceAtLeast(0))
     }
 
     override fun onSessionEnded() {
@@ -200,5 +269,12 @@ private constructor(
 
     private companion object {
         private const val AUTO_STOP_DELAY_MS = 30L * 60L * 1000L
+        private const val PROGRESS_SAVE_INTERVAL_MS = 5_000L
+        /** Saved positions closer to the start than this aren't resumed. */
+        private const val RESUME_MIN_MS = 15_000L
+        /** Rewind a little on resume so the listener can pick up the thread. */
+        private const val RESUME_REWIND_MS = 5_000L
+        /** If a lecture moves on with the last save this close to the end, it was finished. */
+        private const val FINISHED_ON_ADVANCE_MS = 60_000L
     }
 }

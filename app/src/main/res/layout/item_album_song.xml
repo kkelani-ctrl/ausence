@@ -94,4 +94,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Lectures fork: listening progress (hidden until a lecture is started). -->
+    <org.oxycblt.auxio.playback.progress.LectureProgressView
+        android:id="@+id/song_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="@dimen/spacing_mid_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/song_menu"
+        app:layout_constraintStart_toStartOf="@+id/song_name"
+        app:layout_constraintTop_toBottomOf="@+id/song_track_cover" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

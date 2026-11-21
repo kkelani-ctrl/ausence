@@ -56,6 +56,8 @@ class Auxio : Application() {
             Timber.plant(Timber.DebugTree())
         }
 
+        org.oxycblt.auxio.playback.progress.LectureProgress.init(this)
+
         // Migrate any settings that may have changed in an app update.
         imageSettings.migrate()
         playbackSettings.migrate()

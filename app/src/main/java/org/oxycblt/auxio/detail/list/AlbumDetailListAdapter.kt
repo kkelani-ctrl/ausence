@@ -220,6 +220,7 @@ private class AlbumSongViewHolder private constructor(private val binding: ItemA
      */
     fun bind(song: Song, listener: SelectableListListener<Song>) {
         listener.bind(song, this, menuButton = binding.songMenu)
+        binding.songProgress.bind(song)
 
         val track = song.track
         if (track != null) {

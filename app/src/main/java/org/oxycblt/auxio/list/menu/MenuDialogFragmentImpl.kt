@@ -85,6 +85,10 @@ class SongMenuDialogFragment : MenuDialogFragment<Menu.ForSong>() {
             R.id.action_album_details -> detailModel.showAlbum(menu.song.album)
             R.id.action_share -> requireContext().share(menu.song)
             R.id.action_detail -> detailModel.showSong(menu.song)
+            R.id.action_mark_finished ->
+                org.oxycblt.auxio.playback.progress.LectureProgress.markFinished(menu.song)
+            R.id.action_mark_unplayed ->
+                org.oxycblt.auxio.playback.progress.LectureProgress.reset(menu.song)
             else -> error("Unexpected menu item selected $item")
         }
     }

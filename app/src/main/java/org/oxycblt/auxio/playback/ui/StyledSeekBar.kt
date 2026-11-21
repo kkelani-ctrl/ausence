@@ -19,7 +19,10 @@
 package org.oxycblt.auxio.playback.ui
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.TypedValue
 import com.google.android.material.slider.Slider
 import kotlin.math.max
 import org.oxycblt.auxio.databinding.ViewSeekBarBinding
@@ -47,6 +50,57 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     init {
         binding.seekBarSlider.addOnSliderTouchListener(this)
         binding.seekBarSlider.addOnChangeListener(this)
+    }
+
+    /**
+     * Lectures fork: chapter start positions (deci-seconds), drawn as small breaks in the track
+     * so the bar reads as segments, like chapters in an audiobook player.
+     */
+    var chapterMarksDs: List<Long> = emptyList()
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    /** Lectures fork: the chapter name shown between the position and duration. */
+    var chapterLabel: CharSequence?
+        get() = binding.seekBarChapter.text
+        set(value) {
+            if (binding.seekBarChapter.text?.toString() == value?.toString()) return
+            binding.seekBarChapter.text = value
+            binding.seekBarChapter.visibility = if (value.isNullOrEmpty()) GONE else VISIBLE
+        }
+
+    private val markPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            val tv = TypedValue()
+            context.theme.resolveAttribute(
+                com.google.android.material.R.attr.colorSurface, tv, true)
+            color = if (tv.resourceId != 0) context.getColor(tv.resourceId) else tv.data
+        }
+    private val markWidth = 3 * resources.displayMetrics.density
+
+    init {
+        setWillNotDraw(false)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        super.dispatchDraw(canvas)
+        val marks = chapterMarksDs
+        val slider = binding.seekBarSlider
+        val duration = slider.valueTo
+        if (marks.isEmpty() || duration <= 0f) return
+        val side = slider.trackSidePadding.toFloat()
+        val width = slider.width - 2 * side
+        val centerY =
+            slider.top + slider.paddingTop + (slider.height - slider.paddingTop - slider.paddingBottom) / 2f
+        val half = slider.trackHeight / 2f + 1
+        for (mark in marks) {
+            val fraction = mark / duration
+            if (fraction <= 0.005f || fraction >= 0.995f) continue
+            val x = slider.left + side + fraction * width
+            canvas.drawRect(x - markWidth / 2, centerY - half, x + markWidth / 2, centerY + half, markPaint)
+        }
     }
 
     /** Enables/disables wavy active-track rendering to match playback state. */
@@ -116,6 +170,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 
     override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
         updatePositionLabel(value.toLong())
+        if (fromUser) listener?.onScrub(value.toLong())
     }
 
     private fun updatePositionLabel(positionDs: Long) {
@@ -138,5 +193,8 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
          * @param positionDs The position to seek to, in deci-seconds (1/10th of a second).
          */
         fun onSeekConfirmed(positionDs: Long)
+
+        /** Lectures fork: the user is dragging the bar over [positionDs]. */
+        fun onScrub(positionDs: Long) {}
     }
 }

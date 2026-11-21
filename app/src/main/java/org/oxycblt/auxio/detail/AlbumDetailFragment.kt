@@ -149,6 +149,16 @@ class AlbumDetailFragment : DetailFragment<Album, Song>() {
             val songCount = context.getPlural(R.plurals.fmt_song_count, album.songs.size)
             val duration = album.durationMs.formatDurationMs(true)
             text = context.getString(R.string.fmt_three, date, songCount, duration)
+            // Lectures fork: how much of the series has been listened to.
+            val finished =
+                org.oxycblt.auxio.playback.progress.LectureProgress.finishedCount(album.songs)
+            if (finished > 0) {
+                text =
+                    context.getString(
+                        R.string.fmt_two,
+                        text,
+                        context.getString(R.string.fmt_progress_finished_of, finished, album.songs.size))
+            }
         }
 
         binding.detailPlayButton?.setOnClickListener { playbackModel.play(album) }

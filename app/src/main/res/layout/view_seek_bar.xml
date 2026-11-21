@@ -29,6 +29,23 @@
         android:textColor="@color/sel_activatable_text_secondary"
         tools:text="11:38" />
 
+    <!-- Lectures fork: the current chapter, between the times (as in audiobook players). -->
+    <TextView
+        android:id="@+id/seek_bar_chapter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginHorizontal="76dp"
+        android:layout_marginBottom="@dimen/spacing_tiny"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceLabelMedium"
+        android:textColor="?attr/colorOnSurface"
+        android:visibility="gone"
+        tools:text="The seven planes"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/seek_bar_duration"
         android:layout_width="wrap_content"

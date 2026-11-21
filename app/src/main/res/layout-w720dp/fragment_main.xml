@@ -112,7 +112,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
                     android:gravity="center"
-                    android:text="@string/lbl_queue"
+                    android:text="@string/lbl_chapters"
                     android:textAppearance="?attr/textAppearanceLabelLargeEmphasized"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     app:layout_constraintBottom_toBottomOf="@+id/handle"
@@ -121,7 +121,7 @@
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/queue_fragment"
-                    android:name="org.oxycblt.auxio.playback.queue.QueueFragment"
+                    android:name="org.oxycblt.auxio.playback.ChaptersSheetFragment"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1" />

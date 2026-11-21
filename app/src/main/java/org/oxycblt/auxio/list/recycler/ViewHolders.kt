@@ -62,6 +62,7 @@ class SongViewHolder private constructor(private val binding: ItemSongBinding) :
         binding.songAlbumCover.bind(song)
         binding.songName.text = song.name.resolve(binding.context)
         binding.songInfo.text = song.artists.resolveNames(binding.context)
+        binding.songProgress.bind(song)
     }
 
     override fun updatePlayingIndicator(isActive: Boolean, isPlaying: Boolean) {

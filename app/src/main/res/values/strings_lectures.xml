@@ -11,4 +11,14 @@
     <string name="clr_crimson">Crimson</string>
     <string name="clr_ocean">Ocean</string>
     <string name="clr_mono">Mono</string>
+    <!-- Listening progress -->
+    <string name="lbl_progress_finished">Finished</string>
+    <string name="fmt_progress_left_lt_min">Less than a minute left</string>
+    <string name="fmt_progress_left_min">%d min left</string>
+    <string name="fmt_progress_left_h_min">%1$d h %2$d min left</string>
+    <string name="fmt_progress_finished_of">%1$d of %2$d finished</string>
+    <string name="lbl_mark_finished">Mark as finished</string>
+    <string name="lbl_mark_unplayed">Mark as unplayed</string>
+    <string name="fmt_chapter_left">%s left in chapter</string>
+    <string name="lbl_up_next_chapter">Next chapter</string>
 </resources>
