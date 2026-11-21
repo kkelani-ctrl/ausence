@@ -17,9 +17,9 @@
     <!-- As in to retry loading music -->
     <string name="lbl_retry">Retry</string>
 
-    <string name="lbl_songs">Songs</string>
-    <string name="lbl_song">Song</string>
-    <string name="lbl_all_songs">All songs</string>
+    <string name="lbl_songs">Audio</string>
+    <string name="lbl_song">Audio</string>
+    <string name="lbl_all_songs">All audio</string>
 
     <string name="lbl_albums">Albums</string>
     <string name="lbl_album">Album</string>
@@ -106,7 +106,7 @@
     <string name="lbl_name">Name</string>
     <string name="lbl_date">Date</string>
     <string name="lbl_duration">Duration</string>
-    <string name="lbl_song_count">Song count</string>
+    <string name="lbl_song_count">Audio count</string>
     <string name="lbl_disc">Disc</string>
     <string name="lbl_track">Track</string>
     <string name="lbl_date_added">Date added</string>
@@ -134,7 +134,7 @@
     <string name="lbl_parent_detail">View</string>
     <string name="lbl_share">Share</string>
 
-    <string name="lbl_props">Song properties</string>
+    <string name="lbl_props">Audio properties</string>
     <string name="lbl_path">Path</string>
     <!-- As in audio format -->
     <string name="lbl_format">Format</string>
@@ -196,7 +196,7 @@
     <string name="lng_indexing">Loading your music library…</string>
     <string name="lng_observing">Monitoring your music library for changes…</string>
     <string name="lng_queue_added">Added to queue</string>
-    <string name="lng_play_next">Song will play next</string>
+    <string name="lng_play_next">Will play next</string>
     <string name="lng_playlist_created">Playlist created</string>
     <string name="lng_playlist_imported">Playlist imported</string>
     <string name="lng_playlist_renamed">Playlist renamed</string>
@@ -207,10 +207,10 @@
     <!-- As in music library -->
     <string name="lng_search_library">Search your library…</string>
     <string name="lng_tasker_start">
-        Starts Auxio using the previously saved state. If no saved state is available, all songs will be shuffled. Playback will start immediately.
+        Starts Ausence using the previously saved state. If no saved state is available, all audio will be shuffled. Playback will start immediately.
         \n\nWARNING: Be careful controlling this service, if you close it and then try to use it again, you will probably crash the app.
     </string>
-    <string name="lng_empty_songs">Your songs will show up here.</string>
+    <string name="lng_empty_songs">Your audio will show up here.</string>
     <string name="lng_empty_albums">Your albums will show up here.</string>
     <string name="lng_empty_artists">Your artists will show up here.</string>
     <string name="lng_empty_genres">Your genres will show up here.</string>
@@ -252,13 +252,13 @@
     <string name="set_play_in_list_with">When playing from the library</string>
     <string name="set_play_in_parent_with">When playing from item details</string>
     <string name="set_play_song_none">Play from shown item</string>
-    <string name="set_play_song_from_all">Play from all songs</string>
+    <string name="set_play_song_from_all">Play from all audio</string>
     <string name="set_play_song_from_album">Play from album</string>
     <string name="set_play_song_from_artist">Play from artist</string>
     <string name="set_play_song_from_genre">Play from genre</string>
-    <string name="set_play_song_by_itself">Play song by itself</string>
+    <string name="set_play_song_by_itself">Play by itself</string>
     <string name="set_keep_shuffle">Remember shuffle</string>
-    <string name="set_keep_shuffle_desc">Keep shuffle on when playing a new song</string>
+    <string name="set_keep_shuffle_desc">Keep shuffle on when playing new audio</string>
     <string name="set_task_exit">Always exit on close</string>
     <string name="set_task_exit_desc">Stop playback when removed from recents, even if playing</string>
 
@@ -301,9 +301,9 @@
     <string name="set_headset_autoplay">Headset autoplay</string>
     <string name="set_headset_autoplay_desc">Always start playing when a headset is connected (may not work on all devices)</string>
     <string name="set_rewind_prev">Rewind before skipping back</string>
-    <string name="set_rewind_prev_desc">Rewind before skipping to the previous song</string>
+    <string name="set_rewind_prev_desc">Rewind before skipping to the previous track</string>
     <string name="set_repeat_pause">Pause on repeat</string>
-    <string name="set_repeat_pause_desc">Pause when a song repeats</string>
+    <string name="set_repeat_pause_desc">Pause when a track repeats</string>
     <string name="set_remember_pause">Remember pause</string>
     <string name="set_remember_pause_desc">Remain playing/paused when skipping or editing queue</string>
     <string name="set_replay_gain">Volume normalization</string>
@@ -359,21 +359,21 @@
     <string name="desc_track_number">Track %d</string>
 
     <string name="desc_play_pause">Play or pause</string>
-    <string name="desc_skip_next">Skip to next song</string>
-    <string name="desc_skip_prev">Skip to last song</string>
+    <string name="desc_skip_next">Skip to next track</string>
+    <string name="desc_skip_prev">Skip to last track</string>
     <string name="desc_change_repeat">Change repeat mode</string>
     <string name="desc_shuffle">Turn shuffle on or off</string>
     <string name="desc_exit">Stop playback</string>
 
-    <string name="desc_remove_song">Remove this song</string>
-    <string name="desc_song_handle">Move this song</string>
+    <string name="desc_remove_song">Remove this track</string>
+    <string name="desc_song_handle">Move this track</string>
     <string name="desc_queue_bar">Open the queue</string>
     <string name="desc_tab_handle">Move this tab</string>
     <string name="desc_clear_search">Clear search query</string>
     <string name="desc_add_folder">Add folder</string>
     <string name="desc_music_location_delete">Remove folder</string>
 
-    <string name="desc_auxio_icon">Auxio icon</string>
+    <string name="desc_auxio_icon">Ausence icon</string>
     <string name="desc_no_cover">Album cover</string>
     <string name="desc_album_cover">Album cover for %s</string>
     <string name="desc_artist_image">Artist image for %s</string>
@@ -391,7 +391,7 @@
     <string name="def_date">No date</string>
     <string name="def_disc">No disc</string>
     <string name="def_track">No track</string>
-    <string name="def_song_count">No songs</string>
+    <string name="def_song_count">No audio</string>
     <string name="def_album_count">No albums</string>
     <string name="def_playback">No music playing</string>
 
@@ -470,7 +470,7 @@
     <string name="fmt_indexing">Loading your music library… (%1$d/%2$d)</string>
     <string name="fmt_deletion_info">Delete %s? This cannot be undone.</string>
 
-    <string name="fmt_lib_song_count">Songs loaded: %d</string>
+    <string name="fmt_lib_song_count">Audio loaded: %d</string>
     <string name="fmt_lib_album_count">Albums loaded: %d</string>
     <string name="fmt_lib_artist_count">Artists loaded: %d</string>
     <string name="fmt_lib_genre_count">Genres loaded: %d</string>
@@ -479,8 +479,8 @@
     <string name="fmt_lib_total_size">Total size: %s</string>
 
     <plurals name="fmt_song_count">
-        <item quantity="one">%d song</item>
-        <item quantity="other">%d songs</item>
+        <item quantity="one">%d track</item>
+        <item quantity="other">%d tracks</item>
     </plurals>
 
     <plurals name="fmt_album_count">

@@ -81,7 +81,7 @@ class SearchFragment : ListFragment<Music, FragmentSearchBinding>() {
     override val listModel: ListViewModel by activityViewModels()
     override val playbackModel: PlaybackViewModel by activityViewModels()
     override val musicModel: MusicViewModel by activityViewModels()
-    private val searchAdapter = SearchAdapter(this)
+    private val searchAdapter = SearchAdapter(this) { playbackModel.playAt(it.song, it.startMs) }
     private var getContentLauncher: ActivityResultLauncher<String>? = null
     private var pendingImportTarget: Playlist? = null
     private var imm: InputMethodManager? = null

@@ -40,6 +40,11 @@ private val accentNames =
         R.string.clr_orange,
         R.string.clr_brown,
         R.string.clr_grey,
+        R.string.clr_emerald,
+        R.string.clr_gold,
+        R.string.clr_crimson,
+        R.string.clr_ocean,
+        R.string.clr_mono,
         R.string.clr_dynamic,
     )
 
@@ -61,6 +66,11 @@ private val accentThemes =
         R.style.Theme_Auxio_Orange,
         R.style.Theme_Auxio_Brown,
         R.style.Theme_Auxio_Grey,
+        R.style.Theme_Auxio_Emerald,
+        R.style.Theme_Auxio_Gold,
+        R.style.Theme_Auxio_Crimson,
+        R.style.Theme_Auxio_Ocean,
+        R.style.Theme_Auxio_Mono,
         R.style.Theme_Auxio_App, // Dynamic colors are on the base theme
     )
 
@@ -82,6 +92,11 @@ private val accentBlackThemes =
         R.style.Theme_Auxio_Orange_Black,
         R.style.Theme_Auxio_Brown_Black,
         R.style.Theme_Auxio_Grey_Black,
+        R.style.Theme_Auxio_Emerald_Black,
+        R.style.Theme_Auxio_Gold_Black,
+        R.style.Theme_Auxio_Crimson_Black,
+        R.style.Theme_Auxio_Ocean_Black,
+        R.style.Theme_Auxio_Mono_Black,
         R.style.Theme_Auxio_Black, // Dynamic colors are on the base theme
     )
 
@@ -103,6 +118,11 @@ private val accentPrimaryColors =
         R.color.orange_primary,
         R.color.brown_primary,
         R.color.grey_primary,
+        R.color.emerald_primary,
+        R.color.gold_primary,
+        R.color.crimson_primary,
+        R.color.ocean_primary,
+        R.color.mono_primary,
         R.color.dynamic_primary,
     )
 
@@ -153,17 +173,10 @@ class Accent private constructor(val index: Int) {
             return Accent(index)
         }
 
-        /** The default accent. */
-        val DEFAULT =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                // Use dynamic coloring on devices that support it.
-                accentThemes.lastIndex
-            } else {
-                // Use blue everywhere else.
-                5
-            }
+        /** The default accent: Mono (white on black), the Ausence default. */
+        val DEFAULT = accentNames.indexOf(R.string.clr_mono)
 
-        /** The amount of valid accents. */
+        /** The number of available accents. */
         val MAX =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 accentThemes.size

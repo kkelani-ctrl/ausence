@@ -322,6 +322,20 @@ interface Song : Music {
      * [Genre] name was specified in the metadata.
      */
     val genres: List<Genre>
+    /**
+     * Lectures fork: the chapters (topic sections) of this recording, parsed from the
+     * SECTIONS_JSON tag. Empty if none.
+     */
+    val chapters: List<Chapter>
+    /**
+     * Lectures fork: the time-synced transcript, parsed from LRC-formatted lyrics. This is parsed
+     * on every access, so hold on to the result instead of calling it repeatedly.
+     */
+    val transcript: List<TranscriptLine>
+    /** Lectures fork: the raw (usually LRC-formatted) transcript text, if any. */
+    val transcriptText: String?
+    /** Lectures fork: a free-text description of the recording, if any. */
+    val description: String?
 }
 
 /**

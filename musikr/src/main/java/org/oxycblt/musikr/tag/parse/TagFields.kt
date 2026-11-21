@@ -280,6 +280,20 @@ private fun List<String>.parseR128Adjustment() =
 private fun List<String>.parseReplayGainAdjustment() =
     first().replace(REPLAYGAIN_ADJUSTMENT_FILTER_REGEX, "").toFloatOrNull()?.nonZeroOrNull()
 
+// --- Lectures fork: chapters, transcripts and descriptions ---
+
+internal fun Metadata.sectionsJson() =
+    (mp4["----:COM.APPLE.ITUNES:SECTIONS_JSON"]
+            ?: id3v2["TXXX:SECTIONS_JSON"]
+            ?: xiph["SECTIONS_JSON"])
+        ?.first()
+
+internal fun Metadata.lyrics() =
+    (mp4["©lyr"] ?: id3v2["USLT"] ?: xiph["LYRICS"] ?: xiph["UNSYNCEDLYRICS"])?.joinToString("\n")
+
+internal fun Metadata.description() =
+    (mp4["©cmt"] ?: mp4["desc"] ?: xiph["DESCRIPTION"] ?: xiph["COMMENT"])?.first()
+
 /**
  * Matches non-float information from ReplayGain adjustments. Derived from vanilla music:
  * https://github.com/vanilla-music/vanilla

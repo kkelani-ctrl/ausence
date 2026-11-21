@@ -15,7 +15,6 @@
         app:navigationIcon="@drawable/ic_down_24"
         app:subtitleCentered="true"
         app:subtitleTextAppearance="?attr/textAppearanceBodySmall"
-        app:title="@string/lbl_playback"
         app:titleCentered="true"
         app:titleTextAppearance="?attr/textAppearanceLabelLargeEmphasized"
         tools:subtitle="@string/lbl_all_songs" />
@@ -24,7 +23,8 @@
         android:id="@+id/playback_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/spacing_medium"
+        android:layout_marginHorizontal="@dimen/spacing_large"
+        android:layout_marginVertical="@dimen/spacing_medium"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintDimensionRatio="1"
@@ -52,6 +52,7 @@
         <TextView
             android:id="@+id/playback_song"
             style="@style/Widget.Auxio.TextView.Primary"
+            android:textAppearance="?attr/textAppearanceHeadlineSmallEmphasized"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fallbackLineSpacing="false"
@@ -105,7 +106,7 @@
         android:layout_marginEnd="@dimen/spacing_medium"
         android:layout_marginBottom="@dimen/spacing_medium"
         app:layout_constraintTop_toBottomOf="@+id/playback_seek_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/playback_lecture_actions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_max="400dp">
@@ -164,5 +165,43 @@
 
         </org.oxycblt.auxio.playback.ui.button.ScaledPlaybackButtonGroup>
     </org.oxycblt.auxio.playback.ui.ForcedLTRFrameLayout>
+
+    <!-- Bottom row, as in Apple Music: transcript on the left, chapters on the right. -->
+    <LinearLayout
+        android:id="@+id/playback_lecture_actions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_large"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playback_controls_container"
+        app:layout_constraintWidth_max="400dp">
+
+        <org.oxycblt.auxio.ui.RippleFixMaterialButton
+            android:id="@+id/playback_transcript"
+            style="@style/Widget.Auxio.Button.Playback.More"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/lbl_transcript"
+            app:icon="@drawable/ic_transcript_24"
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Small" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <org.oxycblt.auxio.ui.RippleFixMaterialButton
+            android:id="@+id/playback_chapters"
+            style="@style/Widget.Auxio.Button.Playback.More"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/lbl_chapters"
+            app:icon="@drawable/ic_chapters_24"
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Small" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

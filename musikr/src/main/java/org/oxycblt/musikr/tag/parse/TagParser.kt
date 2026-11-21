@@ -74,6 +74,9 @@ private data object TagParserImpl : TagParser {
                     ?: listOf(),
             albumArtistSortNames = metadata.albumArtistSortNames() ?: listOf(),
             genreNames = metadata.genreNames() ?: listOf(),
+            sectionsJson = metadata.sectionsJson(),
+            lyrics = metadata.lyrics(),
+            description = metadata.description(),
         )
     }
 }

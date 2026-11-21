@@ -46,7 +46,10 @@ import org.oxycblt.musikr.Song
  * @param listener An [SelectableListListener] to bind interactions to.
  * @author Alexander Capehart (OxygenCobalt)
  */
-class SearchAdapter(private val listener: SelectableListListener<Music>) :
+class SearchAdapter(
+    private val listener: SelectableListListener<Music>,
+    private val onHitClick: (LectureHit) -> Unit = {},
+) :
     SelectionIndicatorAdapter<Item, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     override fun getItemViewType(position: Int) =
@@ -58,6 +61,7 @@ class SearchAdapter(private val listener: SelectableListListener<Music>) :
             is Playlist -> PlaylistViewHolder.VIEW_TYPE
             is PlainDivider -> DividerViewHolder.VIEW_TYPE
             is BasicHeader -> BasicHeaderViewHolder.VIEW_TYPE
+            is LectureHit -> LectureHitViewHolder.VIEW_TYPE
             else -> super.getItemViewType(position)
         }
 
@@ -70,6 +74,7 @@ class SearchAdapter(private val listener: SelectableListListener<Music>) :
             PlaylistViewHolder.VIEW_TYPE -> PlaylistViewHolder.from(parent)
             DividerViewHolder.VIEW_TYPE -> DividerViewHolder.from(parent)
             BasicHeaderViewHolder.VIEW_TYPE -> BasicHeaderViewHolder.from(parent)
+            LectureHitViewHolder.VIEW_TYPE -> LectureHitViewHolder.from(parent)
             else -> error("Invalid item type $viewType")
         }
 
@@ -81,6 +86,7 @@ class SearchAdapter(private val listener: SelectableListListener<Music>) :
             is Genre -> (holder as GenreViewHolder).bind(item, listener)
             is Playlist -> (holder as PlaylistViewHolder).bind(item, listener)
             is BasicHeader -> (holder as BasicHeaderViewHolder).bind(item)
+            is LectureHit -> (holder as LectureHitViewHolder).bind(item, onHitClick)
         }
     }
 
@@ -107,6 +113,8 @@ class SearchAdapter(private val listener: SelectableListListener<Music>) :
 
                         is PlainDivider if newItem is PlainDivider ->
                             DividerViewHolder.DIFF_CALLBACK.areContentsTheSame(oldItem, newItem)
+
+                        is LectureHit if newItem is LectureHit -> oldItem == newItem
 
                         is BasicHeader if newItem is BasicHeader ->
                             BasicHeaderViewHolder.DIFF_CALLBACK.areContentsTheSame(oldItem, newItem)

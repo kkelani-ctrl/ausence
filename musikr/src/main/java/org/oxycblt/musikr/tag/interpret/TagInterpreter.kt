@@ -154,6 +154,9 @@ private class TagInterpreterImpl(private val interpretation: Interpretation) : T
             preArtists = rawArtists,
             preGenres = rawGenres,
             cover = song.cover,
+            sectionsJson = song.tags.sectionsJson,
+            lyrics = song.tags.lyrics,
+            description = song.tags.description,
         )
     }
 

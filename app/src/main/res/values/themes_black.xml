@@ -173,4 +173,54 @@
         <item name="colorSurfaceContainerHigh">@color/grey_surfaceContainerHigh_black</item>
         <item name="colorSurfaceContainerHighest">@color/grey_surfaceContainerHighest_black</item>
     </style>
+    <style name="Theme.Auxio.Emerald.Black" parent="Theme.Auxio.Emerald">
+        <item name="colorSurface">@color/emerald_surface_black</item>
+        <item name="colorSurfaceDim">@color/emerald_surfaceDim_black</item>
+        <item name="colorSurfaceBright">@color/emerald_surfaceBright_black</item>
+        <item name="colorSurfaceContainerLowest">@color/emerald_surfaceContainerLowest_black</item>
+        <item name="colorSurfaceContainerLow">@color/emerald_surfaceContainerLow_black</item>
+        <item name="colorSurfaceContainer">@color/emerald_surfaceContainer_black</item>
+        <item name="colorSurfaceContainerHigh">@color/emerald_surfaceContainerHigh_black</item>
+        <item name="colorSurfaceContainerHighest">@color/emerald_surfaceContainerHighest_black</item>
+    </style>
+    <style name="Theme.Auxio.Gold.Black" parent="Theme.Auxio.Gold">
+        <item name="colorSurface">@color/gold_surface_black</item>
+        <item name="colorSurfaceDim">@color/gold_surfaceDim_black</item>
+        <item name="colorSurfaceBright">@color/gold_surfaceBright_black</item>
+        <item name="colorSurfaceContainerLowest">@color/gold_surfaceContainerLowest_black</item>
+        <item name="colorSurfaceContainerLow">@color/gold_surfaceContainerLow_black</item>
+        <item name="colorSurfaceContainer">@color/gold_surfaceContainer_black</item>
+        <item name="colorSurfaceContainerHigh">@color/gold_surfaceContainerHigh_black</item>
+        <item name="colorSurfaceContainerHighest">@color/gold_surfaceContainerHighest_black</item>
+    </style>
+    <style name="Theme.Auxio.Crimson.Black" parent="Theme.Auxio.Crimson">
+        <item name="colorSurface">@color/crimson_surface_black</item>
+        <item name="colorSurfaceDim">@color/crimson_surfaceDim_black</item>
+        <item name="colorSurfaceBright">@color/crimson_surfaceBright_black</item>
+        <item name="colorSurfaceContainerLowest">@color/crimson_surfaceContainerLowest_black</item>
+        <item name="colorSurfaceContainerLow">@color/crimson_surfaceContainerLow_black</item>
+        <item name="colorSurfaceContainer">@color/crimson_surfaceContainer_black</item>
+        <item name="colorSurfaceContainerHigh">@color/crimson_surfaceContainerHigh_black</item>
+        <item name="colorSurfaceContainerHighest">@color/crimson_surfaceContainerHighest_black</item>
+    </style>
+    <style name="Theme.Auxio.Ocean.Black" parent="Theme.Auxio.Ocean">
+        <item name="colorSurface">@color/ocean_surface_black</item>
+        <item name="colorSurfaceDim">@color/ocean_surfaceDim_black</item>
+        <item name="colorSurfaceBright">@color/ocean_surfaceBright_black</item>
+        <item name="colorSurfaceContainerLowest">@color/ocean_surfaceContainerLowest_black</item>
+        <item name="colorSurfaceContainerLow">@color/ocean_surfaceContainerLow_black</item>
+        <item name="colorSurfaceContainer">@color/ocean_surfaceContainer_black</item>
+        <item name="colorSurfaceContainerHigh">@color/ocean_surfaceContainerHigh_black</item>
+        <item name="colorSurfaceContainerHighest">@color/ocean_surfaceContainerHighest_black</item>
+    </style>
+    <style name="Theme.Auxio.Mono.Black" parent="Theme.Auxio.Mono">
+        <item name="colorSurface">@color/mono_surface_black</item>
+        <item name="colorSurfaceDim">@color/mono_surfaceDim_black</item>
+        <item name="colorSurfaceBright">@color/mono_surfaceBright_black</item>
+        <item name="colorSurfaceContainerLowest">@color/mono_surfaceContainerLowest_black</item>
+        <item name="colorSurfaceContainerLow">@color/mono_surfaceContainerLow_black</item>
+        <item name="colorSurfaceContainer">@color/mono_surfaceContainer_black</item>
+        <item name="colorSurfaceContainerHigh">@color/mono_surfaceContainerHigh_black</item>
+        <item name="colorSurfaceContainerHighest">@color/mono_surfaceContainerHighest_black</item>
+    </style>
 </resources>

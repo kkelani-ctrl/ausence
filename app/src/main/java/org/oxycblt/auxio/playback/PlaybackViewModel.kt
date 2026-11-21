@@ -437,6 +437,18 @@ constructor(
         playbackManager.playDeferred(action)
     }
 
+    /**
+     * Lectures fork: play [song] (queued with the rest of its album, unshuffled) starting at
+     * [positionMs]. If [song] is already playing, just seek.
+     */
+    fun playAt(song: Song, positionMs: Long) {
+        L.d("Playing $song at ${positionMs}ms")
+        if (playbackManager.currentSong != song) {
+            playFromAlbumImpl(song, ShuffleMode.OFF)
+        }
+        playbackManager.seekTo(positionMs)
+    }
+
     // --- PLAYER FUNCTIONS ---
 
     /**

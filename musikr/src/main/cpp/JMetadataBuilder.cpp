@@ -23,6 +23,7 @@
 #include <taglib/mp4tag.h>
 #include <taglib/textidentificationframe.h>
 #include <taglib/attachedpictureframe.h>
+#include <taglib/unsynchronizedlyricsframe.h>
 
 #include <taglib/tpropertymap.h>
 
@@ -71,6 +72,12 @@ void JMetadataBuilder::setId3v2(TagLib::ID3v2::Tag &tag) {
             TagLib::String key = frame->frameID();
             TagLib::StringList frameText = textFrame->fieldList();
             id3v2.add_id(key, frameText);
+        } else if (auto lyricsFrame =
+                dynamic_cast<TagLib::ID3v2::UnsynchronizedLyricsFrame*>(frame)) {
+            // Lectures fork: transcripts are stored as (LRC-formatted) lyrics.
+            if (!lyricsFrame->text().isEmpty()) {
+                id3v2.add_id("USLT", lyricsFrame->text());
+            }
         } else if (auto pictureFrame =
                 dynamic_cast<TagLib::ID3v2::AttachedPictureFrame*>(frame)) {
             if (!firstPic) {

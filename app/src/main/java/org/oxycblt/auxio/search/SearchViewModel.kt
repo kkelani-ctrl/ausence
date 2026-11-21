@@ -131,10 +131,22 @@ constructor(
 
         val results = searchEngine.search(items, query)
 
+        // Lectures fork: matches inside chapters and transcripts.
+        val songsForHits = items.songs ?: emptyList()
+        val chapterHits = LectureSearch.chapters(songsForHits, query)
+        val transcriptHits = LectureSearch.transcripts(songsForHits, query)
+
         return buildList {
+            if (chapterHits.isNotEmpty()) {
+                add(BasicHeader(R.string.lbl_chapter_matches))
+                addAll(chapterHits)
+            }
             results.artists?.let {
                 L.d("Adding ${it.size} artists to search results")
                 val header = BasicHeader(R.string.lbl_artists)
+                if (isNotEmpty()) {
+                    add(PlainDivider(header))
+                }
                 add(header)
                 addAll(SORT.artists(it))
             }
@@ -177,6 +189,14 @@ constructor(
 
                 add(header)
                 addAll(SORT.songs(it))
+            }
+            if (transcriptHits.isNotEmpty()) {
+                val header = BasicHeader(R.string.lbl_transcript_matches)
+                if (isNotEmpty()) {
+                    add(PlainDivider(header))
+                }
+                add(header)
+                addAll(transcriptHits)
             }
         }
     }

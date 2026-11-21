@@ -23,6 +23,10 @@ uploads anything.
 
 Everything Auxio does, plus:
 
+- **A calmer, Apple Music-style look**: pure black by default, large artwork that eases back
+  when paused, secondary actions tucked into menus, and a library that opens on your teachers
+  and series. Five extra colour palettes (Mono, Emerald, Gold, Crimson, Ocean) are in Settings.
+
 - **Chapters**: a list of a recording's sections, with titles and short summaries. Tap one
   to jump to it. The current chapter is highlighted while you listen.
 - **Transcripts**: a time-synced transcript that follows playback. Tap a line to jump
@@ -60,14 +64,20 @@ past 59 for long recordings. Plain text with no timestamps is shown as untimed p
 ## Building
 
 You need the Android SDK with NDK `28.2.13676358` and CMake, plus Java 21. The project uses
-submodules, so clone with `git clone --recurse-submodules`.
+submodules, so clone with `git clone --recurse-submodules`, then apply the fix for the bundled
+Media3 copy:
 
 ```bash
+git -C media apply ../patches/media-fix-hagc-merge.patch
 ./gradlew assembleDebug
 ```
 
-The debug APK ends up in `app/build/outputs/apk/debug/`. It installs as a separate
-"Auxio Debug" app, alongside any regular Auxio you already have.
+The debug APK ends up in `app/build/outputs/apk/debug/` and installs as "Ausence Debug".
+Ausence uses its own package name (`app.ausence`), so it installs alongside Auxio.
+
+**Release builds:** `./gradlew assembleRelease` signs the APK if there's a `keystore.properties`
+file in the project root (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`). That file
+and the keystore are kept out of git.
 
 **Building on Windows:** upstream Auxio doesn't support Windows, because its FFmpeg decoder
 and TagLib steps run Unix shell scripts. To build here:

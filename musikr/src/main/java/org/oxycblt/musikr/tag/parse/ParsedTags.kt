@@ -42,4 +42,10 @@ data class ParsedTags(
     val albumArtistNames: List<String> = listOf(),
     val albumArtistSortNames: List<String> = listOf(),
     val genreNames: List<String> = listOf(),
+    /** Lectures fork: raw JSON chapter list (SECTIONS_JSON tag). */
+    val sectionsJson: String? = null,
+    /** Lectures fork: raw lyrics/transcript text, usually LRC-formatted. */
+    val lyrics: String? = null,
+    /** Lectures fork: free-text description/comment. */
+    val description: String? = null,
 )

@@ -167,6 +167,11 @@ class PlaybackPanelFragment :
         }
         binding.playbackSkipNext.setOnClickListener { playbackModel.next() }
         binding.playbackShuffle.setOnClickListener { playbackModel.toggleShuffled() }
+        // Lectures fork: Apple Music-style bottom row (absent on short/landscape layouts, where
+        // the same actions live in the toolbar).
+        binding.playbackTranscript?.setOnClickListener { showTranscript() }
+        binding.playbackChapters?.setOnClickListener { showChapters() }
+
         binding.playbackMore?.setOnClickListener {
             playbackModel.song.value?.let {
                 listModel.openMenu(R.menu.playback_song, it, PlaySong.ByItself)
@@ -220,6 +225,8 @@ class PlaybackPanelFragment :
 
     override fun onDestroyBinding(binding: FragmentPlaybackPanelBinding) {
         equalizerLauncher = null
+        coverPlaying = null
+        binding.playbackPager?.animate()?.cancel()
         binding.playbackRepeat.clearPendingIcon()
         binding.playbackSong.isSelected = false
         binding.playbackArtist.isSelected = false
@@ -230,6 +237,15 @@ class PlaybackPanelFragment :
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
+        // Lectures fork: chapter list and transcript sheets.
+        if (item.itemId == R.id.action_show_chapters) {
+            showChapters()
+            return true
+        }
+        if (item.itemId == R.id.action_show_transcript) {
+            showTranscript()
+            return true
+        }
         if (item.itemId == R.id.action_open_equalizer) {
             // Launch the system equalizer app, if possible.
             L.d("Launching equalizer")
@@ -253,6 +269,20 @@ class PlaybackPanelFragment :
         return false
     }
 
+    private fun showChapters() {
+        if (playbackModel.song.value?.chapters.isNullOrEmpty()) return
+        if (childFragmentManager.findFragmentByTag(ChaptersDialog.TAG) == null) {
+            ChaptersDialog().show(childFragmentManager, ChaptersDialog.TAG)
+        }
+    }
+
+    private fun showTranscript() {
+        if (playbackModel.song.value?.transcriptText.isNullOrBlank()) return
+        if (childFragmentManager.findFragmentByTag(TranscriptDialog.TAG) == null) {
+            TranscriptDialog().show(childFragmentManager, TranscriptDialog.TAG)
+        }
+    }
+
     override fun onSeekConfirmed(positionDs: Long) {
         playbackModel.seekTo(positionDs)
     }
@@ -270,6 +300,23 @@ class PlaybackPanelFragment :
         binding.playbackArtist.text = song.artists.resolveNames(context)
         binding.playbackAlbum?.text = song.album.name.resolve(context)
         binding.playbackSeekBar?.durationDs = song.durationMs.msToDs()
+        val hasChapters = song.chapters.isNotEmpty()
+        val hasTranscript = !song.transcriptText.isNullOrBlank()
+        // With the bottom row present, keep the top bar clean; otherwise use the toolbar.
+        val hasBottomRow = binding.playbackLectureActions != null
+        binding.playbackToolbar.menu.apply {
+            findItem(R.id.action_show_chapters)?.isVisible = hasChapters && !hasBottomRow
+            findItem(R.id.action_show_transcript)?.isVisible = hasTranscript && !hasBottomRow
+        }
+        // Like Apple Music's lyrics button: dimmed rather than hidden when unavailable.
+        binding.playbackTranscript?.apply {
+            isEnabled = hasTranscript
+            alpha = if (hasTranscript) 1f else 0.38f
+        }
+        binding.playbackChapters?.apply {
+            isEnabled = hasChapters
+            alpha = if (hasChapters) 1f else 0.38f
+        }
     }
 
     private fun updateParent(parent: MusicParent?) {
@@ -292,6 +339,40 @@ class PlaybackPanelFragment :
     private fun updatePlaying(isPlaying: Boolean) {
         requireBinding().playbackPlayPause.isChecked = isPlaying
         requireBinding().playbackSeekBar?.setWaveEnabled(isPlaying)
+        animateCover(isPlaying)
+    }
+
+    private var coverPlaying: Boolean? = null
+
+    /**
+     * As in Apple Music, the artwork sits at full size while playing and recedes a little when
+     * paused, with a soft spring.
+     */
+    private fun animateCover(isPlaying: Boolean) {
+        val pager = requireBinding().playbackPager ?: return
+        val target = if (isPlaying) 1f else PAUSED_COVER_SCALE
+        val first = coverPlaying == null
+        if (coverPlaying == isPlaying) return
+        coverPlaying = isPlaying
+        pager.animate().cancel()
+        if (first) {
+            pager.scaleX = target
+            pager.scaleY = target
+            return
+        }
+        pager
+            .animate()
+            .scaleX(target)
+            .scaleY(target)
+            .setDuration(if (isPlaying) 450L else 350L)
+            .setInterpolator(
+                if (isPlaying) android.view.animation.OvershootInterpolator(1.4f)
+                else androidx.interpolator.view.animation.FastOutSlowInInterpolator())
+            .start()
+    }
+
+    private companion object {
+        const val PAUSED_COVER_SCALE = 0.86f
     }
 
     private fun updateShuffled(isShuffled: Boolean) {

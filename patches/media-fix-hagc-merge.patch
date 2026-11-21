@@ -1,0 +1,20 @@
+diff --git a/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/ProgressiveMediaSource.java b/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/ProgressiveMediaSource.java
+index 2e4ec9e..d075353 100644
+--- a/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/ProgressiveMediaSource.java
++++ b/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/ProgressiveMediaSource.java
+@@ -330,7 +330,6 @@ public final class ProgressiveMediaSource extends BaseMediaSource
+       LoadErrorHandlingPolicy errorHandlingPolicy = loadErrorHandlingPolicy;
+       int checkIntervalBytes = continueLoadingCheckIntervalBytes;
+       boolean loadSelectedTracks = loadOnlySelectedTracks;
+-      boolean enableHagcPlayback = experimentalEnableHagcPlayback;
+       int trackId = singleTrackId;
+       @Nullable Format trackFormat = singleTrackFormat;
+       @Nullable Supplier<ReleasableExecutor> executorSupplier = downloadExecutorSupplier;
+@@ -345,7 +344,6 @@ public final class ProgressiveMediaSource extends BaseMediaSource
+                   errorHandlingPolicy,
+                   checkIntervalBytes,
+                   loadSelectedTracks,
+-                  enableHagcPlayback,
+                   trackId,
+                   trackFormat,
+                   executorSupplier));

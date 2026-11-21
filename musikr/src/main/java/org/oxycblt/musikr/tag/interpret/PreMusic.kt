@@ -55,6 +55,9 @@ internal data class PreSong(
     val preAlbum: PreAlbum,
     val preArtists: List<PreArtist>,
     val preGenres: List<PreGenre>,
+    val sectionsJson: String? = null,
+    val lyrics: String? = null,
+    val description: String? = null,
 )
 
 internal data class PreAlbum(

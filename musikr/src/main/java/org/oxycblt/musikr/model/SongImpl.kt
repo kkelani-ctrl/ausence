@@ -20,6 +20,8 @@ package org.oxycblt.musikr.model
 
 import org.oxycblt.musikr.Album
 import org.oxycblt.musikr.Artist
+import org.oxycblt.musikr.Chapter
+import org.oxycblt.musikr.TranscriptLine
 import org.oxycblt.musikr.Genre
 import org.oxycblt.musikr.Song
 import org.oxycblt.musikr.tag.interpret.PreSong
@@ -71,6 +73,15 @@ internal class SongImpl(private val handle: SongCore) : Song {
 
     override val genres: List<Genre>
         get() = handle.resolveGenres()
+
+    override val chapters: List<Chapter> by lazy { Chapter.parse(preSong.sectionsJson) }
+    // Not cached: transcripts are large, and keeping every parsed transcript in memory would be
+    // wasteful. Only the raw text is kept.
+    override val transcript: List<TranscriptLine>
+        get() = TranscriptLine.parseForDisplay(preSong.lyrics)
+
+    override val transcriptText = preSong.lyrics
+    override val description = preSong.description
 
     private val hashCode = 31 * uid.hashCode() + preSong.hashCode()
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lbl_chapters">Chapters</string>
+    <string name="lbl_transcript">Transcript</string>
+    <string name="lbl_chapter_matches">Chapters</string>
+    <string name="lbl_transcript_matches">Transcripts</string>
+    <string name="lbl_no_chapters">This recording has no chapters</string>
+    <string name="lbl_no_transcript">This recording has no transcript</string>
+    <string name="clr_emerald">Emerald</string>
+    <string name="clr_gold">Gold</string>
+    <string name="clr_crimson">Crimson</string>
+    <string name="clr_ocean">Ocean</string>
+    <string name="clr_mono">Mono</string>
+</resources>

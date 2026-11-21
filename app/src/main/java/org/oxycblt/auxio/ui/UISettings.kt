@@ -56,11 +56,11 @@ class UISettingsImpl @Inject constructor(@ApplicationContext context: Context) :
         get() =
             sharedPreferences.getInt(
                 getString(R.string.set_key_theme),
-                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+                AppCompatDelegate.MODE_NIGHT_YES,
             )
 
     override val useBlackTheme: Boolean
-        get() = sharedPreferences.getBoolean(getString(R.string.set_key_black_theme), false)
+        get() = sharedPreferences.getBoolean(getString(R.string.set_key_black_theme), true)
 
     override var accent: Accent
         get() =
@@ -86,7 +86,7 @@ class UISettingsImpl @Inject constructor(@ApplicationContext context: Context) :
                 // Accents were previously frozen as soon as the OS was updated to android
                 // twelve, as dynamic colors were enabled by default. This is no longer the
                 // case, so we need to re-update the setting to dynamic colors here.
-                accent = 16
+                accent = 21 // dynamic, after the Ausence palettes
             }
 
             sharedPreferences.edit {
