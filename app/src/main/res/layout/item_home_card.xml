@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lectures fork: one large cover in a Home row, with progress underneath. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="156dp"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_tiny"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_tiny">
+
+    <org.oxycblt.auxio.image.CoverView
+        android:id="@+id/card_cover"
+        android:layout_width="148dp"
+        android:layout_height="148dp"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large" />
+
+    <TextView
+        android:id="@+id/card_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="?attr/textAppearanceTitleSmallEmphasized"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="Memory Palaces and the Art of Remembering" />
+
+    <TextView
+        android:id="@+id/card_artist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?android:attr/textColorSecondary"
+        tools:text="Iris Calder" />
+
+    <org.oxycblt.auxio.playback.progress.LectureProgressView
+        android:id="@+id/card_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_tiny" />
+</LinearLayout>

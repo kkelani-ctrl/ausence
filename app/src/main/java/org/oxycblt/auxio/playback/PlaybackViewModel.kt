@@ -489,9 +489,10 @@ constructor(
 
     /** Step back by 10 seconds in the current song. */
     fun stepBackwards() {
-        L.d("Stepping back 10 seconds")
+        val stepMs = org.oxycblt.auxio.playback.audio.LectureAudio.stepSeconds * 1000L
+        L.d("Stepping back $stepMs ms")
         val currentPositionMs = playbackManager.progression.calculateElapsedPositionMs()
-        val newPositionMs = (currentPositionMs - 10000).coerceAtLeast(0)
+        val newPositionMs = (currentPositionMs - stepMs).coerceAtLeast(0)
         playbackManager.seekTo(newPositionMs)
     }
 
@@ -502,7 +503,8 @@ constructor(
         val currentSong = playbackManager.currentSong
         if (currentSong != null) {
             val newPositionMs =
-                (currentPositionMs + STEP_INCREMENT).coerceAtMost(currentSong.durationMs)
+                (currentPositionMs + org.oxycblt.auxio.playback.audio.LectureAudio.stepSeconds * 1000L)
+                    .coerceAtMost(currentSong.durationMs)
             playbackManager.seekTo(newPositionMs)
         }
     }
@@ -688,9 +690,6 @@ constructor(
         openPanel.put(panel)
     }
 
-    private companion object {
-        private const val STEP_INCREMENT = 10000 // ms
-    }
 }
 
 data class PagerQueue(val queue: List<Song>, val index: Int)

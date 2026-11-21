@@ -62,6 +62,20 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
             invalidate()
         }
 
+    /** Lectures fork: bookmark positions (deci-seconds), drawn as small dots above the track. */
+    var bookmarkMarksDs: List<Long> = emptyList()
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    private val bookmarkPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            val tv = TypedValue()
+            context.theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, tv, true)
+            color = if (tv.resourceId != 0) context.getColor(tv.resourceId) else tv.data
+        }
+
     /** Lectures fork: the chapter name shown between the position and duration. */
     var chapterLabel: CharSequence?
         get() = binding.seekBarChapter.text
@@ -89,7 +103,14 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
         val marks = chapterMarksDs
         val slider = binding.seekBarSlider
         val duration = slider.valueTo
-        if (marks.isEmpty() || duration <= 0f) return
+        if (duration <= 0f) return
+        val dotSide = slider.trackSidePadding.toFloat()
+        val dotY = slider.top + slider.paddingTop + 2 * resources.displayMetrics.density
+        for (mark in bookmarkMarksDs) {
+            val x = slider.left + dotSide + (mark / duration) * (slider.width - 2 * dotSide)
+            canvas.drawCircle(x, dotY, 3 * resources.displayMetrics.density, bookmarkPaint)
+        }
+        if (marks.isEmpty()) return
         val side = slider.trackSidePadding.toFloat()
         val width = slider.width - 2 * side
         val centerY =

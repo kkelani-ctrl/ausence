@@ -176,6 +176,18 @@ class PlaybackPanelFragment :
         // the same actions live in the toolbar).
         binding.playbackTranscript?.setOnClickListener { showTranscript() }
         binding.playbackLyricsCard?.setOnClickListener { showTranscript() }
+        binding.playbackSpeed?.setOnClickListener {
+            org.oxycblt.auxio.playback.audio.ListeningSheet().show(childFragmentManager, org.oxycblt.auxio.playback.audio.ListeningSheet.TAG)
+        }
+        binding.playbackSleep?.setOnClickListener {
+            org.oxycblt.auxio.playback.audio.SleepSheet().show(childFragmentManager, org.oxycblt.auxio.playback.audio.SleepSheet.TAG)
+        }
+        // Tap: save this moment. Long-press: save it with a note.
+        binding.playbackBookmark?.setOnClickListener { addBookmark(withNote = false) }
+        binding.playbackBookmark?.setOnLongClickListener {
+            addBookmark(withNote = true)
+            true
+        }
         // Like Spotify's queue button: slide up the chapters sheet under the player.
         binding.playbackChapters?.setOnClickListener { playbackModel.openQueue() }
 
@@ -193,6 +205,9 @@ class PlaybackPanelFragment :
         collectImmediately(playbackModel.isPlaying, ::updatePlaying)
         collectImmediately(playbackModel.isShuffled, ::updateShuffled)
         collectImmediately(playbackModel.pagerQueue, ::updatePager)
+        collectImmediately(org.oxycblt.auxio.playback.audio.LectureAudio.settingsVersion) { updateSpeedLabel() }
+        collectImmediately(org.oxycblt.auxio.playback.audio.LectureAudio.sleep) { updateSleepLabel() }
+        org.oxycblt.auxio.playback.audio.LectureBookmarks.addListener(onBookmarksChanged)
     }
 
     // FIXME: Old code!! Maybe not necessary anymore?
@@ -230,7 +245,50 @@ class PlaybackPanelFragment :
     //        }
     //    }
 
+    private val onBookmarksChanged: () -> Unit = { updateBookmarkMarks() }
+
+    private fun updateSpeedLabel() {
+        val binding = binding ?: return
+        binding.playbackSpeed?.text =
+            org.oxycblt.auxio.playback.audio.formatSpeed(
+                requireContext(), org.oxycblt.auxio.playback.audio.LectureAudio.speedFor(playbackModel.song.value))
+    }
+
+    /** The sleep button shows the minutes left while a timer runs. */
+    private fun updateSleepLabel() {
+        val button = binding?.playbackSleep ?: return
+        val left = org.oxycblt.auxio.playback.audio.sleepRemaining(playbackModel)?.first
+        button.text = left?.let { getString(R.string.fmt_sleep_button, (it / 60_000L) + 1) } ?: ""
+    }
+
+    private fun updateBookmarkMarks() {
+        val binding = binding ?: return
+        val song = playbackModel.song.value
+        binding.playbackSeekBar?.bookmarkMarksDs =
+            song?.let { org.oxycblt.auxio.playback.audio.LectureBookmarks.of(it).map { b -> b.positionMs.msToDs() } }
+                ?: emptyList()
+    }
+
+    private fun addBookmark(withNote: Boolean) {
+        val song = playbackModel.song.value ?: return
+        val positionMs = playbackModel.positionDs.value.dsToMs()
+        if (withNote) {
+            org.oxycblt.auxio.playback.audio.promptText(
+                requireContext(), R.string.lbl_bookmark_with_note, null, multiLine = true) {
+                    org.oxycblt.auxio.playback.audio.LectureBookmarks.add(song, positionMs, it)
+                }
+        } else {
+            org.oxycblt.auxio.playback.audio.LectureBookmarks.add(song, positionMs)
+            android.widget.Toast.makeText(
+                    requireContext(),
+                    getString(R.string.fmt_bookmark_saved, positionMs.formatDurationMs(true)),
+                    android.widget.Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
     override fun onDestroyBinding(binding: FragmentPlaybackPanelBinding) {
+        org.oxycblt.auxio.playback.audio.LectureBookmarks.removeListener(onBookmarksChanged)
         equalizerLauncher = null
         coverPlaying = null
         binding.playbackPager?.animate()?.cancel()
@@ -311,7 +369,16 @@ class PlaybackPanelFragment :
         val context = requireContext()
         L.d("Updating song display: $song")
         binding.playbackSong.text = song.name.resolve(context)
-        binding.playbackArtist.text = song.artists.resolveNames(context)
+        binding.playbackArtist.text =
+            if (binding.playbackAlbum == null) {
+                // Compact layout: "Teacher · Series" on one line leaves more room for the cover.
+                getString(
+                    R.string.fmt_two,
+                    song.artists.resolveNames(context),
+                    song.album.name.resolve(context))
+            } else {
+                song.artists.resolveNames(context)
+            }
         binding.playbackAlbum?.text = song.album.name.resolve(context)
         binding.playbackSeekBar?.durationDs = song.durationMs.msToDs()
         val hasChapters = song.chapters.isNotEmpty()
@@ -331,6 +398,8 @@ class PlaybackPanelFragment :
         lastLineIndex = Int.MIN_VALUE
         binding.playbackLyricsCard?.isVisible = lectureLines.isNotEmpty()
         binding.playbackSeekBar?.chapterMarksDs = lectureChapters.map { it.startMs.msToDs() }
+        updateSpeedLabel()
+        updateBookmarkMarks()
         updateLectureDisplay(playbackModel.positionDs.value)
 
         // Like Apple Music's lyrics button: dimmed rather than hidden when unavailable.
@@ -366,9 +435,22 @@ class PlaybackPanelFragment :
         val binding = binding ?: return
         val positionMs = positionDs.dsToMs()
         if (!isScrubbing) {
+            val chapter = lectureChapters.getOrNull(lectureChapters.indexAt(positionMs))
+            val song = playbackModel.song.value
             binding.playbackSeekBar?.chapterLabel =
-                lectureChapters.getOrNull(lectureChapters.indexAt(positionMs))?.title
+                if (chapter == null || song == null) {
+                    chapter?.title
+                } else {
+                    // "Chapter title · 6:12 left", like an audiobook player's chapter progress.
+                    val left =
+                        org.oxycblt.auxio.playback.audio.LectureAudio.chapterEndMs(song, positionMs) - positionMs
+                    getString(
+                        R.string.fmt_chapter_left_label,
+                        chapter.title,
+                        left.coerceAtLeast(0).formatDurationMs(false))
+                }
         }
+        updateSleepLabel()
         if (lectureLines.isEmpty()) return
         val index = lectureLines.lineAt(positionMs)
         if (index == lastLineIndex) return

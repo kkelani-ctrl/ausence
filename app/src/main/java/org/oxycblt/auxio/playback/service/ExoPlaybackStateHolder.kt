@@ -108,6 +108,7 @@ class ExoPlaybackStateHolder(
         replayGainProcessor.release()
         imageSettings.unregisterListener(this)
         playbackSettings.unregisterListener(this)
+        loudness?.release()
         player.release()
     }
 
@@ -133,6 +134,44 @@ class ExoPlaybackStateHolder(
 
     override val audioSessionId: Int
         get() = player.audioSessionId
+
+    // --- Lectures fork: listening controls (applied by PlaybackServiceFragment) ---
+
+    // shortcut: the enhancer is bound to the session id at creation; recreated only if the id
+    // changes, which ExoPlayer does rarely (e.g. after an audio offload change).
+    private var loudness: android.media.audiofx.LoudnessEnhancer? = null
+    private var loudnessSession = -1
+
+    /** Speed with the voice's pitch kept natural (ExoPlayer's Sonic processor). */
+    fun setSpeed(speed: Float) {
+        if (player.playbackParameters.speed != speed) player.setPlaybackSpeed(speed)
+    }
+
+    /** Cut out pauses (ExoPlayer's built-in silence skipping). */
+    fun setSkipSilence(enabled: Boolean) {
+        player.skipSilenceEnabled = enabled
+    }
+
+    /** Make quiet speakers louder with Android's loudness effect. */
+    fun setVoiceBoost(enabled: Boolean) {
+        runCatching {
+            val session = player.audioSessionId
+            if (enabled && (loudness == null || loudnessSession != session)) {
+                loudness?.release()
+                loudness = android.media.audiofx.LoudnessEnhancer(session)
+                loudnessSession = session
+            }
+            loudness?.apply {
+                if (enabled) setTargetGain(VOICE_BOOST_MB)
+                this.enabled = enabled
+            }
+        }
+    }
+
+    /** 0..1, for the sleep timer's fade-out. */
+    fun setVolume(volume: Float) {
+        player.volume = volume
+    }
 
     override fun resolveQueue(): RawQueue {
         if (musicRepository.library == null) {
@@ -702,5 +741,7 @@ class ExoPlaybackStateHolder(
 
     private companion object {
         const val SAVE_BUFFER = 5000L
+        /** +8 dB: clearly louder for quiet speakers without clipping most recordings. */
+        const val VOICE_BOOST_MB = 800
     }
 }

@@ -81,6 +81,9 @@ class Auxio : Application() {
         installCrashLog()
         org.oxycblt.auxio.playback.progress.LectureProgress.init(this)
         org.oxycblt.auxio.playback.clips.LecturePlaylists.init(this)
+        org.oxycblt.auxio.playback.audio.LectureAudio.init(this)
+        org.oxycblt.auxio.playback.audio.LectureBookmarks.init(this)
+        org.oxycblt.auxio.playback.progress.ListeningStats.init(this)
         org.oxycblt.auxio.playback.clips.ClipSession.init(this)
 
         // Migrate any settings that may have changed in an app update.

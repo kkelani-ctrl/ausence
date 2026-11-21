@@ -37,6 +37,7 @@ import org.oxycblt.auxio.playback.state.DeferredPlayback
 import org.oxycblt.auxio.playback.state.PlaybackStateManager
 import org.oxycblt.auxio.playback.state.Progression
 import org.oxycblt.auxio.widgets.WidgetComponent
+import org.oxycblt.auxio.playback.audio.LectureAudio
 import org.oxycblt.auxio.playback.progress.LectureProgress
 import org.oxycblt.auxio.playback.state.QueueChange
 import org.oxycblt.musikr.MusicParent
@@ -121,6 +122,9 @@ private constructor(
         systemReceiver.attach()
         playbackManager.addListener(this)
         updateAutoStopTimer(playbackManager.progression.isPlaying)
+        // Lectures fork: listening controls and the sleep timer, set from the UI.
+        scope.launch { LectureAudio.settingsVersion.collect { applyListening() } }
+        scope.launch { LectureAudio.sleep.collect(::onSleepChanged) }
         return sessionHolder.token
     }
 
@@ -176,6 +180,7 @@ private constructor(
         saveLectureProgress()
         stopProgressTicker()
         stopClipMonitor()
+        sleepJob?.cancel()
         autoStopJob?.cancel()
         waitJob.cancel()
         playbackManager.removeListener(this)
@@ -225,17 +230,34 @@ private constructor(
 
     private fun startProgressTicker() {
         if (progressJob?.isActive == true) return
+        lastStatsTick = android.os.SystemClock.elapsedRealtime()
         progressJob = scope.launch {
             while (true) {
                 delay(PROGRESS_SAVE_INTERVAL_MS.milliseconds)
                 saveLectureProgress()
+                recordListening()
             }
         }
     }
 
     private fun stopProgressTicker() {
+        if (progressJob?.isActive == true) recordListening()
+        lastStatsTick = 0
         progressJob?.cancel()
         progressJob = null
+    }
+
+    private var lastStatsTick = 0L
+
+    /** Add the real time listened since the last tick to the stats (wall time, not audio time). */
+    private fun recordListening() {
+        val now = android.os.SystemClock.elapsedRealtime()
+        val song = playbackManager.currentSong
+        if (lastStatsTick > 0 && song != null) {
+            org.oxycblt.auxio.playback.progress.ListeningStats.record(
+                song, (now - lastStatsTick).coerceAtMost(STATS_MAX_GAP_MS))
+        }
+        lastStatsTick = now
     }
 
     // --- CHAPTER PLAYLISTS (clips) ---
@@ -290,10 +312,60 @@ private constructor(
         clipJob = null
     }
 
+    // --- LISTENING CONTROLS AND SLEEP TIMER ---
+
+    private var speedAppliedFor: Song? = null
+    private var sleepJob: Job? = null
+
+    /** Speed (this lecture's own, or the last used), skip silence and voice boost. */
+    private fun applyListening() {
+        speedAppliedFor = playbackManager.currentSong
+        exoHolder.setSpeed(LectureAudio.speedFor(speedAppliedFor))
+        exoHolder.setSkipSilence(LectureAudio.skipSilence)
+        exoHolder.setVoiceBoost(LectureAudio.voiceBoost)
+    }
+
+    private fun onSleepChanged(sleep: LectureAudio.Sleep) {
+        sleepJob?.cancel()
+        exoHolder.setVolume(1f)
+        if (sleep == LectureAudio.Sleep.Off) return
+        val song = playbackManager.currentSong
+        val position = playbackManager.progression.calculateElapsedPositionMs()
+        // Where "end of chapter" / "end of lecture" falls, fixed when the timer is set.
+        val targetMs =
+            when (sleep) {
+                LectureAudio.Sleep.EndOfChapter -> song?.let { LectureAudio.chapterEndMs(it, position) }
+                LectureAudio.Sleep.EndOfLecture -> song?.durationMs
+                else -> null
+            }
+        sleepJob = scope.launch {
+            while (true) {
+                delay(SLEEP_TICK_MS.milliseconds)
+                val remaining =
+                    when {
+                        sleep is LectureAudio.Sleep.Timer -> sleep.remainingMs
+                        // The lecture moved on (it ended, or the user skipped): stop now.
+                        playbackManager.currentSong != song || targetMs == null -> 0L
+                        else ->
+                            targetMs - playbackManager.progression.calculateElapsedPositionMs()
+                    }
+                // Fade out over the last seconds instead of cutting off mid-sentence.
+                exoHolder.setVolume((remaining.toFloat() / SLEEP_FADE_MS).coerceIn(0f, 1f))
+                if (remaining <= 0) {
+                    playbackManager.playing(false)
+                    exoHolder.setVolume(1f)
+                    LectureAudio.setSleep(LectureAudio.Sleep.Off)
+                    break
+                }
+            }
+        }
+    }
+
     /** When a different lecture starts: close out the old one, and resume the new one. */
     private fun onLectureMaybeChanged() {
         val song = playbackManager.currentSong
         val index = playbackManager.index
+        if (song != speedAppliedFor) applyListening()
         // Chapter playlists: each queue position may be a clip of its episode (even when two
         // clips of the same episode follow each other).
         if (index != trackedIndex || song != trackedSong) {
@@ -355,5 +427,9 @@ private constructor(
         private const val CLIP_END_SLACK_MS = 250L
         private const val CLIP_SEEK_TOLERANCE_MS = 2_000L
         private const val CLIP_REARM_MS = 5_000L
+        private const val SLEEP_TICK_MS = 250L
+        /** Never count more than this per tick (guards against a stalled ticker). */
+        private const val STATS_MAX_GAP_MS = 15_000L
+        private const val SLEEP_FADE_MS = 10_000f
     }
 }

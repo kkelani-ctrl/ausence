@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lectures fork: a series on the Home shelf, with a ring showing how much is listened. -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:padding="@dimen/spacing_small">
+
+    <org.oxycblt.auxio.image.CoverView
+        android:id="@+id/shelf_cover"
+        style="@style/Widget.Auxio.Image.MidFull"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Progress ring, on a dark disc so it reads on any cover. -->
+    <FrameLayout
+        android:id="@+id/shelf_ring_container"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="@dimen/spacing_small"
+        android:background="@drawable/ui_shelf_ring_bg"
+        app:layout_constraintBottom_toBottomOf="@+id/shelf_cover"
+        app:layout_constraintEnd_toEndOf="@+id/shelf_cover">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/shelf_ring"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:max="1000"
+            app:indicatorColor="@android:color/white"
+            app:indicatorSize="32dp"
+            app:trackColor="#40FFFFFF"
+            app:trackThickness="3dp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/shelf_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="?attr/textAppearanceTitleSmallEmphasized"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shelf_cover"
+        tools:text="Foundations of Stoic Thought" />
+
+    <TextView
+        android:id="@+id/shelf_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?android:attr/textColorSecondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shelf_title"
+        tools:text="1 of 3 finished" />
+</androidx.constraintlayout.widget.ConstraintLayout>

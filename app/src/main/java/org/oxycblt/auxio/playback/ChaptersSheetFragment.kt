@@ -21,7 +21,6 @@ package org.oxycblt.auxio.playback
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.LayoutInflater
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -49,6 +48,11 @@ class ChaptersSheetFragment : ViewBindingFragment<FragmentChaptersSheetBinding>(
                         org.oxycblt.auxio.playback.clips.PlaylistEntry.chapter(song, chapter))
                 }
             })
+    private val bookmarksAdapter =
+        org.oxycblt.auxio.playback.audio.BookmarksAdapter { playbackModel.seekTo(it.msToDs()) }
+    private val onBookmarksChanged: () -> Unit = {
+        bookmarksAdapter.submit(playbackModel.song.value)
+    }
     private var lastUserScrollMs = 0L
     private var lastIndex = -1
 
@@ -60,7 +64,10 @@ class ChaptersSheetFragment : ViewBindingFragment<FragmentChaptersSheetBinding>(
         savedInstanceState: Bundle?,
     ) {
         super.onBindingCreated(binding, savedInstanceState)
-        binding.chaptersSheetRecycler.adapter = adapter
+        // Bookmarks and notes on top, then the chapters.
+        binding.chaptersSheetRecycler.adapter =
+            androidx.recyclerview.widget.ConcatAdapter(bookmarksAdapter, adapter)
+        org.oxycblt.auxio.playback.audio.LectureBookmarks.addListener(onBookmarksChanged)
         binding.chaptersSheetRecycler.addOnScrollListener(
             object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -75,13 +82,14 @@ class ChaptersSheetFragment : ViewBindingFragment<FragmentChaptersSheetBinding>(
 
     override fun onDestroyBinding(binding: FragmentChaptersSheetBinding) {
         super.onDestroyBinding(binding)
+        org.oxycblt.auxio.playback.audio.LectureBookmarks.removeListener(onBookmarksChanged)
         binding.chaptersSheetRecycler.adapter = null
     }
 
     private fun updateSong(song: Song?) {
         val binding = requireBinding()
         adapter.submit(song?.chapters ?: emptyList())
-        binding.chaptersSheetEmpty.isVisible = song != null && adapter.itemCount == 0
+        bookmarksAdapter.submit(song)
         lastIndex = -1
         updatePosition(playbackModel.positionDs.value.dsToMs())
     }
@@ -93,7 +101,9 @@ class ChaptersSheetFragment : ViewBindingFragment<FragmentChaptersSheetBinding>(
         lastIndex = index
         if (SystemClock.elapsedRealtime() - lastUserScrollMs < FOLLOW_PAUSE_MS) return
         val lm = binding.chaptersSheetRecycler.layoutManager as? LinearLayoutManager ?: return
-        binding.chaptersSheetRecycler.post { lm.scrollToPositionWithOffset(index, 0) }
+        // Chapters come after the bookmarks section.
+        val row = index + bookmarksAdapter.itemCount
+        binding.chaptersSheetRecycler.post { lm.scrollToPositionWithOffset(row, 0) }
     }
 
     private companion object {

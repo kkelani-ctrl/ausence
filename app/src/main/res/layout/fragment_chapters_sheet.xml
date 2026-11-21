@@ -14,15 +14,5 @@
         android:paddingBottom="@dimen/spacing_medium"
         tools:listitem="@layout/item_chapter" />
 
-    <TextView
-        android:id="@+id/chapters_sheet_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/spacing_large"
-        android:text="@string/lbl_no_chapters"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textColor="?android:attr/textColorSecondary"
-        android:visibility="gone" />
 
 </FrameLayout>

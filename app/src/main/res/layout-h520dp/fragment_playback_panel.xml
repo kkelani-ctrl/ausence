@@ -23,8 +23,8 @@
         android:id="@+id/playback_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="@dimen/spacing_large"
-        android:layout_marginVertical="@dimen/spacing_medium"
+        android:layout_marginHorizontal="@dimen/spacing_medium"
+        android:layout_marginVertical="@dimen/spacing_tiny"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintDimensionRatio="1"
@@ -66,13 +66,6 @@
             android:fallbackLineSpacing="false"
             tools:text="Artist Name" />
 
-        <TextView
-            android:id="@+id/playback_album"
-            style="@style/Widget.Auxio.TextView.Secondary.Marquee"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fallbackLineSpacing="false"
-            tools:text="Album Name" />
 
     </LinearLayout>
 
@@ -190,7 +183,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="@dimen/spacing_medium"
-            android:paddingVertical="12dp">
+            android:paddingVertical="@dimen/spacing_small">
 
             <TextView
                 android:id="@+id/playback_lyrics_current"
@@ -237,6 +230,54 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/lbl_transcript"
             app:icon="@drawable/ic_transcript_24"
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Small" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/playback_speed"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/lbl_speed"
+            android:minWidth="48dp"
+            android:textAppearance="?attr/textAppearanceLabelLargeEmphasized"
+            android:textColor="?attr/colorOnSurface"
+            tools:text="1.25×" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/playback_sleep"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/lbl_sleep_timer"
+            android:minWidth="48dp"
+            android:textAppearance="?attr/textAppearanceLabelLargeEmphasized"
+            android:textColor="?attr/colorOnSurface"
+            app:icon="@drawable/ic_sleep_24"
+            app:iconTint="?attr/colorOnSurface"
+            tools:text="23m" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <org.oxycblt.auxio.ui.RippleFixMaterialButton
+            android:id="@+id/playback_bookmark"
+            style="@style/Widget.Auxio.Button.Playback.More"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/lbl_add_bookmark"
+            app:icon="@drawable/ic_bookmark_add_24"
             app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Small" />
 
         <Space

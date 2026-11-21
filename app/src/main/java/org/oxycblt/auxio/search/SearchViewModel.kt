@@ -133,10 +133,15 @@ constructor(
 
         // Lectures fork: matches inside chapters and transcripts.
         val songsForHits = items.songs ?: emptyList()
+        val noteHits = LectureSearch.notes(songsForHits, query)
         val chapterHits = LectureSearch.chapters(songsForHits, query)
         val transcriptHits = LectureSearch.transcripts(songsForHits, query)
 
         return buildList {
+            if (noteHits.isNotEmpty()) {
+                add(BasicHeader(R.string.lbl_note_matches))
+                addAll(noteHits)
+            }
             if (chapterHits.isNotEmpty()) {
                 add(BasicHeader(R.string.lbl_chapter_matches))
                 addAll(chapterHits)

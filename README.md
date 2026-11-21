@@ -58,9 +58,23 @@ speaker talks. Tap any line to jump there.
 ### ⏱️ Remembers where you were, in every lecture
 Like an audiobook app, each lecture keeps its own place, even after you close the app. Pick it
 up again and it resumes a few seconds back, so you don't lose the thread.
-- **Home** shows what you're in the middle of, most recent first, and what you've finished.
+- **Home** is a bookshelf: what you're in the middle of, what you just finished, and every
+  series with a ring showing how far through it you are.
 - Every list shows a thin progress bar and the time left.
 - Series pages show how far through you are ("12 of 36 finished").
+
+### 🔖 Bookmarks and notes
+Tap once to bookmark the moment you're hearing; press and hold to add a thought. Keep running
+notes on each lecture. Bookmarks show as dots on the seek bar, and your notes are searchable.
+
+### 🌙 Built for long listening
+- **Speed** from 0.5× to 3×, remembered for each lecture.
+- **Skip silence** trims the pauses; **voice boost** lifts quiet speakers.
+- **Sleep timer** with a countdown bar, or pause at the **end of the chapter**. It fades out
+  instead of cutting off mid-sentence.
+- **Double-tap** the cover to skip back or ahead, by 5, 10, 15 or 30 seconds.
+- **Listening stats**: minutes per day, the last two weeks at a glance, and your most-listened
+  lectures, all kept on your phone.
 
 ### 🖤 Quiet by design
 Pure black with a white Mono theme by default, or one of 20+ colour palettes. Big artwork that

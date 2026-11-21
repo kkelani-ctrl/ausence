@@ -194,6 +194,11 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 findNavController().navigateSafe(HomeFragmentDirections.search())
                 true
             }
+            R.id.action_stats -> {
+                org.oxycblt.auxio.playback.progress.StatsSheet()
+                    .show(childFragmentManager, org.oxycblt.auxio.playback.progress.StatsSheet.TAG)
+                true
+            }
             R.id.action_settings -> {
                 L.d("Navigating to preferences")
                 homeModel.showSettings()

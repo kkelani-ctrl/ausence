@@ -47,6 +47,9 @@ data class LectureHit(
     val isChapter: Boolean,
     /** For chapters: how long the chapter runs. */
     val durationMs: Long? = null,
+    /** A note of the user's: on a bookmark ([isBookmark]) or on the whole lecture. */
+    val isNote: Boolean = false,
+    val isBookmark: Boolean = false,
 )
 
 /** Finds [LectureHit]s for a query. All words of the query must be present (in any order). */
@@ -92,6 +95,34 @@ object LectureSearch {
         return hits
             .sortedByDescending { matches(fold(it.text), terms) }
             .take(MAX_CHAPTER_HITS)
+    }
+
+    /** The user's own notes: bookmark notes and lecture notes. */
+    suspend fun notes(songs: Collection<Song>, query: String): List<LectureHit> {
+        val terms = terms(query)
+        if (terms.isEmpty()) return emptyList()
+        val byUid = songs.associateBy { it.uid.toString() }
+        val hits = mutableListOf<LectureHit>()
+        val bookmarks = org.oxycblt.auxio.playback.audio.LectureBookmarks
+        for ((uid, note) in bookmarks.allNotes()) {
+            currentCoroutineContext().ensureActive()
+            val song = byUid[uid] ?: continue
+            if (matches(fold(note), terms)) {
+                hits.add(LectureHit(song, 0, note, null, false, isNote = true))
+            }
+        }
+        for ((uid, list) in bookmarks.allBookmarks()) {
+            currentCoroutineContext().ensureActive()
+            val song = byUid[uid] ?: continue
+            for (b in list) {
+                val note = b.note ?: continue
+                if (matches(fold(note), terms)) {
+                    hits.add(
+                        LectureHit(song, b.positionMs, note, null, false, isNote = true, isBookmark = true))
+                }
+            }
+        }
+        return hits
     }
 
     /**
@@ -158,7 +189,14 @@ class LectureHitViewHolder private constructor(private val binding: ItemLectureH
         binding.hitCover.bind(hit.song)
         binding.hitTime.text = hit.startMs.formatDurationMs(true)
         val lecture = hit.song.name.resolve(context)
-        if (hit.isChapter) {
+        if (hit.isNote) {
+            binding.hitText.text = hit.text
+            binding.hitSong.text =
+                context.getString(
+                    if (hit.isBookmark) org.oxycblt.auxio.R.string.fmt_bookmark_hit
+                    else org.oxycblt.auxio.R.string.fmt_note_hit,
+                    lecture)
+        } else if (hit.isChapter) {
             // Chapters read like songs: title, then "Chapter · lecture · length".
             binding.hitText.text = hit.text
             val minutes = ((hit.durationMs ?: 0) / 60_000L).coerceAtLeast(1)

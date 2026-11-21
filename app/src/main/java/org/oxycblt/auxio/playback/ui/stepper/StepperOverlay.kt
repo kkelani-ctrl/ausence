@@ -236,7 +236,7 @@ class StepperOverlay(context: Context, attrs: AttributeSet?) :
         // update seconds from tap - reset when exit anim clears
         // largely implicit shared understanding that seeking occurs by 10s
         // todo: probably share this constant
-        tappedSecondsView.seconds += 10
+        tappedSecondsView.seconds += org.oxycblt.auxio.playback.audio.LectureAudio.stepSeconds
     }
 
     override fun onDoubleTap(e: MotionEvent): Boolean {
