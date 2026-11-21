@@ -18,6 +18,19 @@ Music players treat a two-hour lecture like a three-minute song: one long bar an
 Ausence treats it the way you actually listen to one, as a series of ideas you want to find,
 return to, and collect.
 
+<table align="center">
+  <tr>
+    <td align="center"><img src="art/screenshots/player.png" width="240" alt="Player with chapter name on the seek bar and a live transcript card"><br><sub><b>Chapters on the bar, words on screen</b></sub></td>
+    <td align="center"><img src="art/screenshots/transcript.png" width="240" alt="Full-screen transcript following the speaker"><br><sub><b>A transcript that follows the voice</b></sub></td>
+    <td align="center"><img src="art/screenshots/search.png" width="240" alt="Search results showing matching chapters"><br><sub><b>Search finds the moment, not the file</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="art/screenshots/chapters.png" width="240" alt="Chapter list with summaries under the player"><br><sub><b>Every chapter, summarised</b></sub></td>
+    <td align="center"><img src="art/screenshots/library.png" width="240" alt="Library with progress bars and time left"><br><sub><b>Your place, in every lecture</b></sub></td>
+    <td></td>
+  </tr>
+</table>
+
 ## What makes it different
 
 ### 🔎 Search what was *said*, not just titles
@@ -123,7 +136,8 @@ the keystore are kept out of git.
 Ogg and Opus), and TagLib is built once with `musikr/src/main/cpp/build_taglib.sh` from Git
 Bash, with Ninja and the SDK's CMake on `PATH`.
 
-**Logo:** the mark is drawn in code; see `art/logo.py`, with the SVGs alongside it.
+**Logo:** seven sparkles riding a sound wave, drawn in code; see `art/logo.py`, with the SVGs
+alongside it.
 
 </details>
 

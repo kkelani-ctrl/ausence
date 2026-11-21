@@ -71,7 +71,6 @@ class HomeOverviewFragment : ViewBindingFragment<FragmentHomeOverviewBinding>() 
             lastKey = null
             rebuild()
         }
-        collectImmediately(playbackModel.song) { adapter.setPlaying(it) }
     }
 
     override fun onDestroyBinding(binding: FragmentHomeOverviewBinding) {
@@ -120,22 +119,10 @@ private class OverviewAdapter(
     private val onMenu: (Song) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var items = emptyList<OverviewItem>()
-    private var playing: Song? = null
 
     fun submit(list: List<OverviewItem>) {
         items = list
         @Suppress("NotifyDataSetChanged") notifyDataSetChanged()
-    }
-
-    fun setPlaying(song: Song?) {
-        if (song == playing) return
-        val old = playing
-        playing = song
-        items.forEachIndexed { i, item ->
-            if (item is OverviewItem.Row && (item.song == old || item.song == song)) {
-                notifyItemChanged(i)
-            }
-        }
     }
 
     override fun getItemCount() = items.size
@@ -168,7 +155,8 @@ private class OverviewAdapter(
                         song.artists.resolveNames(context),
                         song.album.name.resolve(context))
                 b.songProgress.bind(song)
-                b.root.isSelected = song == playing
+                // Always show the cover: the mini player already shows what's playing, and the
+                // "now playing" tile would hide the artwork here.
                 b.root.setOnClickListener { onPlay(song) }
                 b.songMenu.setOnClickListener { onMenu(song) }
             }
