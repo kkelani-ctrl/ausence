@@ -129,7 +129,7 @@ constructor(
      * A list of [MusicType] corresponding to the current [Tab] configuration, excluding invisible
      * [Tab]s.
      */
-    var currentTabTypes = homeGenerator.tabs()
+    var currentTabTypes = listOf(MusicType.HOME) + homeGenerator.tabs()
         private set
 
     private val _currentTabType = MutableStateFlow(currentTabTypes[0])
@@ -188,11 +188,12 @@ constructor(
                 playlistInstructions.put(instructions)
                 playlistList.value = homeGenerator.playlists()
             }
+            MusicType.HOME -> {}
         }
     }
 
     override fun invalidateTabs() {
-        currentTabTypes = homeGenerator.tabs()
+        currentTabTypes = listOf(MusicType.HOME) + homeGenerator.tabs()
         recreateTabs.put(Unit)
     }
 

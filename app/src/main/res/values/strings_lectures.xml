@@ -21,4 +21,9 @@
     <string name="lbl_mark_unplayed">Mark as unplayed</string>
     <string name="fmt_chapter_left">%s left in chapter</string>
     <string name="lbl_up_next_chapter">Next chapter</string>
+    <!-- Home overview -->
+    <string name="lbl_home">Home</string>
+    <string name="lbl_continue_listening">Continue listening</string>
+    <string name="lbl_finished_lectures">Finished</string>
+    <string name="lng_home_empty">Lectures you start will show up here, so you can pick up where you left off.</string>
 </resources>

@@ -46,6 +46,7 @@ import org.oxycblt.auxio.home.list.AlbumListFragment
 import org.oxycblt.auxio.home.list.ArtistListFragment
 import org.oxycblt.auxio.home.list.GenreListFragment
 import org.oxycblt.auxio.home.list.PlaylistListFragment
+import org.oxycblt.auxio.home.list.HomeOverviewFragment
 import org.oxycblt.auxio.home.list.SongListFragment
 import org.oxycblt.auxio.home.tabs.NamedTabStrategy
 import org.oxycblt.auxio.home.tabs.Tab
@@ -214,8 +215,9 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                         MusicType.ARTISTS -> HomeFragmentDirections.sortArtists()
                         MusicType.GENRES -> HomeFragmentDirections.sortGenres()
                         MusicType.PLAYLISTS -> HomeFragmentDirections.sortPlaylists()
+                        MusicType.HOME -> null
                     }
-                findNavController().navigateSafe(directions)
+                if (directions != null) findNavController().navigateSafe(directions)
                 true
             }
             else -> {
@@ -266,7 +268,11 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 MusicType.ARTISTS -> R.id.home_artist_recycler
                 MusicType.GENRES -> R.id.home_genre_recycler
                 MusicType.PLAYLISTS -> R.id.home_playlist_recycler
+                MusicType.HOME -> R.id.home_overview_recycler
             }
+        // Lectures fork: nothing to sort on the Home overview.
+        binding.homeNormalToolbar.menu.findItem(R.id.action_sort)?.isVisible =
+            tabType != MusicType.HOME
     }
 
     private fun handleRecreate(recreate: Unit?) {
@@ -488,6 +494,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 MusicType.ARTISTS -> ArtistListFragment()
                 MusicType.GENRES -> GenreListFragment()
                 MusicType.PLAYLISTS -> PlaylistListFragment()
+                MusicType.HOME -> HomeOverviewFragment()
             }
     }
 }

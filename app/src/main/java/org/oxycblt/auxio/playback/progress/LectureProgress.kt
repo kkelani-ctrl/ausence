@@ -37,7 +37,13 @@ object LectureProgress {
      * @param durationMs The recording's length when saved.
      * @param finished Whether the lecture was listened to the end (or marked as such).
      */
-    data class Entry(val positionMs: Long, val durationMs: Long, val finished: Boolean) {
+    data class Entry(
+        val positionMs: Long,
+        val durationMs: Long,
+        val finished: Boolean,
+        /** When this was last listened to (or marked), for "continue listening" ordering. */
+        val updatedAt: Long = 0,
+    ) {
         val fraction: Float
             get() =
                 when {
@@ -84,6 +90,7 @@ object LectureProgress {
             parts[0].toLongOrNull() ?: return null,
             parts[1].toLongOrNull() ?: return null,
             parts[2] == "1",
+            parts.getOrNull(3)?.toLongOrNull() ?: 0,
         )
     }
 
@@ -92,7 +99,10 @@ object LectureProgress {
         if (entry == null) cache.remove(k) else cache[k] = entry
         prefs?.edit {
             if (entry == null) remove(k)
-            else putString(k, "${entry.positionMs}|${entry.durationMs}|${if (entry.finished) 1 else 0}")
+            else
+                putString(
+                    k,
+                    "${entry.positionMs}|${entry.durationMs}|${if (entry.finished) 1 else 0}|${entry.updatedAt}")
         }
         notifyChanged()
     }
@@ -108,15 +118,16 @@ object LectureProgress {
             return
         }
         val finished = duration > 0 && positionMs >= duration - FINISH_MARGIN_MS
-        val entry = Entry(positionMs, duration, finished)
-        if (old == entry) return
+        val entry = Entry(positionMs, duration, finished, System.currentTimeMillis())
+        if (old != null && old.positionMs == positionMs && old.finished == finished) return
         // Avoid rewriting the file for tiny moves of the same entry.
         if (old != null && !finished && old.finished == finished &&
             kotlin.math.abs(old.positionMs - positionMs) < 1000) return
         write(song, entry)
     }
 
-    fun markFinished(song: Song) = write(song, Entry(song.durationMs, song.durationMs, true))
+    fun markFinished(song: Song) =
+        write(song, Entry(song.durationMs, song.durationMs, true, System.currentTimeMillis()))
 
     fun reset(song: Song) = write(song, null)
 

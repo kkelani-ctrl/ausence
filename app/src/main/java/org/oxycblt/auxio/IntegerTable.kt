@@ -91,6 +91,8 @@ object IntegerTable {
     const val MUSIC_MODE_GENRES = 0xA108
     /** MusicMode.PLAYLISTS */
     const val MUSIC_MODE_PLAYLISTS = 0xA107
+    /** Lectures fork: the Home overview tab. */
+    const val MUSIC_MODE_HOME = 0xA1F0
     /** Sort.Mode.ByName */
     const val SORT_BY_NAME = 0xA10C
     /** Sort.Mode.ByArtist */
